@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:composite="http://xmlns.jcp.org/jsf/composite" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:x="http://myfaces.apache.org/tomahawk" xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+    <composite:interface>
+    </composite:interface>
+
+    <composite:implementation>
+        <h:form id="processDeletion" prependId="false" styleClass="form-horizontal form-bordered">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="box box-color box-bordered lightgrey">
+                        <div class="box-title">
+                            <h3>
+                                <i class="fa fa-plug"></i>
+                                <h:outputText value="#{msgs[AdministrationForm.administrationPlugin.title]}" />
+                            </h3>
+                        </div>
+                        <div class="box-content nopadding">
+                            <intranda:formInputText name="identifier" label="#{msgs.identifier}" field="#{AdministrationForm.administrationPlugin.identifier}" help="#{msgs.helpIdentifier}" fieldStyle="form-control" required="true" />
+                            <div class="form-actions">
+                                <h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.copyAnchorFile}">
+                                    <i class="fa fa-copy margin-right-5"></i>
+                                    <h:outputText value="#{msgs.copyAnchorFileToProcesses}" />
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+    </composite:implementation>
+
+</ui:composition>
