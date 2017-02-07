@@ -4,7 +4,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <h:form id="processDeletion" prependId="false" styleClass="form-horizontal form-bordered">
+        <h:form id="dailypressform" prependId="false" styleClass="form-horizontal form-bordered">
             <div class="row">
                 <div class="col-sm-12">
                     <div class="box box-color box-bordered lightgrey">
@@ -13,20 +13,75 @@
                                 <i class="fa fa-plug"></i>
                                 <h:outputText value="#{msgs[AdministrationForm.administrationPlugin.title]}" />
                             </h3>
+                            <ul class="tabs">
+								<h:panelGroup>
+									<li class="#{(NavigationForm.uiStatus.nliDailyPress_singleImport eq '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null) ?'active':''}">
+										<h:commandLink action="#{NavigationForm.Reload}" value="#{msgs.plugin_NliDailyPress_singleImport}" immediate="true">
+											<f:setPropertyActionListener
+												target="#{NavigationForm.uiStatus.nliDailyPress_singleImport}" value="" />
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+								<li class="#{NavigationForm.uiStatus.nliDailyPress_singleImport eq 'tab2'?'active':''}">
+									<h:commandLink action="#{NavigationForm.Reload}" immediate="true"
+										value="#{msgs.plugin_NliDailyPress_multipleImport}">
+										<f:setPropertyActionListener
+											target="#{NavigationForm.uiStatus.nliDailyPress_singleImport}"
+											value="tab2" />
+									</h:commandLink>
+								</li>
+							</ul>
                         </div>
                         <div class="box-content nopadding">
-                            <intranda:formInputText name="identifier" label="#{msgs.identifier}" field="#{AdministrationForm.administrationPlugin.identifier}" help="#{msgs.helpIdentifier}" fieldStyle="form-control" required="true" />
-                            <div class="form-actions">
-                                <h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
-                                    <i class="fa fa-copy margin-right-5"></i>
-                                    <h:outputText value="#{msgs.plugin_NliDailyPress_cancelImport}" />
-                                </h:commandLink>
-                                
-                                <h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
-                                    <i class="fa fa-copy margin-right-5"></i>
-                                    <h:outputText value="#{msgs.plugin_NliDailyPress_executeSingleImport}" />
-                                </h:commandLink>
-                            </div>
+
+							<!-- ############################ Single record import ################################# -->
+                        	
+                        	<h:panelGroup
+								rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
+							
+								<!-- Field for CMS ID -->
+								<intranda:formInputText name="singleCmsID" label="#{msgs.plugin_NliDailyPress_singleCmsID}" field="#{AdministrationForm.administrationPlugin.singleCmsID}" help="#{msgs.helpPlugin_NliDailyPress_singleCmsID}" fieldStyle="form-control" required="true" />
+								<!-- Field for Issue Number -->
+								<intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_NliDailyPress_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueNumber}" fieldStyle="form-control" required="true" />
+			                    <!-- Field for Issue Date -->
+								<intranda:formInputText name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control" required="true" />
+			                    <!-- Field for Issue Comment -->
+								<intranda:formInputTextArea name="singleIssueComment" label="#{msgs.plugin_NliDailyPress_singleIssueComment}" field="#{AdministrationForm.administrationPlugin.singleIssueComment}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueComment}" fieldStyle="form-control" required="true" />
+			                    
+			                    <!-- Form action -->
+								<div class="form-actions">
+				                    <!-- Execute single import -->
+	                        		<h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
+				                    	<i class="fa fa-check margin-right-5"></i>
+				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_executeSingleImport}" />
+				                    </h:commandLink>
+				                	<!-- Cancel single import -->
+				                    <h:commandLink styleClass="btn font-size-s margin-left-10 pull-right margin-bottom-more" action="#{AdministrationForm.administrationPlugin.cancelSingleImport}" immediate="true">
+				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_cancelSingleImport}" />
+			                        </h:commandLink>
+			                    </div>	
+							</h:panelGroup>
+
+							<!-- ############################ Multiple records import ################################# -->
+							
+							<h:panelGroup
+								rendered="#{NavigationForm.uiStatus.nliDailyPress_singleImport == 'tab2'}">
+								
+								<!-- Form action -->
+								<div class="form-actions">
+									<!-- Execute multiple records import -->
+	                        		<h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.executeMultipleImport}">
+				                    	<i class="fa fa-check margin-right-5"></i>
+				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_executeMultipleImport}" />
+				                    </h:commandLink>
+				                	<!-- Cancel multiple records import -->
+				                    <h:commandLink styleClass="btn font-size-s margin-left-10 pull-right margin-bottom-more" action="#{AdministrationForm.administrationPlugin.cancelMultipleImport}" immediate="true">
+				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_cancelMultipleImport}" />
+			                        </h:commandLink>
+			                    </div>	
+								
+							</h:panelGroup>
+                            
                         </div>
                     </div>
                 </div>
