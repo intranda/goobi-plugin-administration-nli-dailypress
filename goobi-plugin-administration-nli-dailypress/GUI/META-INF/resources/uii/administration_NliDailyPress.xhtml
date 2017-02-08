@@ -4,6 +4,16 @@
     </composite:interface>
 
     <composite:implementation>
+        
+    <link type="text/css" rel="stylesheet" href="template/css/plugins/datepicker/datepicker.min.css" />
+    <link type="text/css" rel="stylesheet" href="#{AdministrationForm.administrationPlugin.title}/dailyPress.css" />
+    
+    <script type="text/javascript" src="template/js/reactiveX/rx.lite.min.js" />
+    <script type="text/javascript" src="template/js/q-promises/q.min.js" />
+    <script type="text/javascript" src="template/js/plugins/datepicker/bootstrap-datepicker.js"/>
+    <script type="text/javascript" src="#{AdministrationForm.administrationPlugin.title}/dailyPress.js" />
+    
+    
         <h:form id="dailypressform" prependId="false" styleClass="form-horizontal form-bordered">
             <div class="row">
                 <div class="col-sm-12">
@@ -39,12 +49,65 @@
                         	<h:panelGroup
 								rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
 							
-								<!-- Field for CMS ID -->
-								<intranda:formInputText name="singleCmsID" label="#{msgs.plugin_NliDailyPress_singleCmsID}" field="#{AdministrationForm.administrationPlugin.singleCmsID}" help="#{msgs.helpPlugin_NliDailyPress_singleCmsID}" fieldStyle="form-control" required="true" />
+								<!-- Field for CMS ID -->								
+								<div class="form-group">
+									<div class="col-sm-3 control-label">
+										<h:outputLabel for="singleCmsID" value="#{msgs.plugin_NliDailyPress_singleCmsID}" />
+										<h:panelGroup rendered="true">
+											<i class="fa fa-asterisk pull-right font-asterisk"/>
+										</h:panelGroup>
+									</div>
+									<h:panelGroup layout="block" id="searchGroup" styleClass="col-sm-6">
+										<x:inputText id="singleCmsID" forceId="true"
+											styleClass="form-control" value="#{AdministrationForm.administrationPlugin.singleCmsID}" required="true"
+											readonly="false" onfocus="true">
+										</x:inputText>
+										<h:message for="singleCmsID" showDetail="true" styleClass="help-inline font-danger" />
+										<h:outputText styleClass="help-block font-light" rendered="#{NavigationForm.showHelp}"
+											value="#{msgs.helpPlugin_NliDailyPress_singleCmsID}" />
+									</h:panelGroup>
+									<div class="col-sm-3">
+										<h:commandLink styleClass="btn font-size-s padding-sides-more" id="cms_id_search_btn"
+										action="#{AdministrationForm.administrationPlugin.searchNewspaper}">
+											<h:outputText value="#{msgs.search}" />
+											<f:ajax execute="searchGroup" render="newspaper_metadata" onevent="executeNewspaperSearch"></f:ajax>
+										</h:commandLink>
+<!-- 										<a class="btn font-size-s padding-sides-more" id="cms_id_search_btn">#{msgs.search} -->
+<!-- 										</a> -->
+									</div>
+								</div>
+								
 								<!-- Field for Issue Number -->
+                                <h:panelGroup styleClass="form-group" id="newspaper_metadata_waiting">                                    
+									<div id="ajaxloader_newspaperquery" class="ajaxloader">
+                                            <img src="template/img/goobi/ajaxloader2.gif" />
+                                    </div>
+								</h:panelGroup>
+								<h:panelGroup layout="block" styleClass="form-group" id="newspaper_metadata">
+									<h:panelGroup  rendered="#{AdministrationForm.administrationPlugin.newspaperSelected}">
+										<div class="col-sm-3 control-label">
+											<h:outputLabel value="#{msgs.dailypress_record}" />
+										</div>
+										<div class="col-sm-9">
+											<dl class="dl-horizontal">
+												<dt>#{msgs.dailypress_record_title}</dt>
+												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.title}</dd>
+												
+												<dt>#{msgs.dailypress_record_place}</dt>
+												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("PUBLISHING PLACE")}</dd>
+												
+												<dt>#{msgs.dailypress_record_publisher}</dt>
+												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("PUBLISHING HOUSE")}</dd>
+											</dl>
+										</div>
+									</h:panelGroup>
+									<h:panelGroup layout="block" styleClass="alert alert-error" id="missing_newspaper_metadata" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}">
+										<h4 class="alert-message" id="missing_newspaper_message"><i class="fa fa-warning"/>#{msgs.dailypress_no_newspaper_dataset_found}</h4>
+									</h:panelGroup>
+								</h:panelGroup>
 								<intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_NliDailyPress_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueNumber}" fieldStyle="form-control" required="true" />
 			                    <!-- Field for Issue Date -->
-								<intranda:formInputText name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control" required="true" />
+								<intranda:formInputText name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control date" required="true" />
 			                    <!-- Field for Issue Comment -->
 								<intranda:formInputTextArea name="singleIssueComment" label="#{msgs.plugin_NliDailyPress_singleIssueComment}" field="#{AdministrationForm.administrationPlugin.singleIssueComment}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueComment}" fieldStyle="form-control" required="true" />
 			                    

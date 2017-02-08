@@ -1,0 +1,41 @@
+#newspaper_metadata .alert {
+	opacity: 0.6;
+	padding: 15px;
+	margin-bottom: 0;
+	display: none;
+}
+
+.alert-error {
+	background-color: red;
+}
+
+.alert .alert-message {
+	background-color: white;
+	color: red;
+	margin: 10px;
+	padding: 10px;
+}
+
+#newspaper_metadata_waiting {
+	display: none;
+}
+
+#newspaper_metadata_waiting .ajaxloader{
+	padding: 20px;
+	text-align: center;
+}
+
+a.btn.padding-sides-more {
+	padding-left: 20px;
+	padding-right:20px;
+}
+
+#newspaper_metadata .dl-horizontal dt{
+	text-align: left;
+	width: 20%;
+}
+
+#newspaper_metadata .dl-horizontal dd{
+	text-align: left;
+	margin-left: 20%
+}

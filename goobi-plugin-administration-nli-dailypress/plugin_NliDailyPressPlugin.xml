@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config_plugin>
+    <newspaperTablePath>/home/florian/git/goobi-plugin-administration-nli-dailypress/goobi-plugin-administration-nli-dailypress/test/resources/DailyPress_SamplePapers.xlsx</newspaperTablePath>
+	<newspaperMappings identifierRow="1" identifierColumn="1">
+		<mapping>
+			<metadata>TitleDocMain</metadata>
+			<column>TITLE</column>
+			<type>label</type>
+		</mapping>
+		<mapping>
+			<metadata>PlaceOfPublication</metadata>
+			<column>PUBLISHING PLACE</column>
+			<type>label</type>
+		</mapping>
+		<mapping>
+			<metadata>Publisher</metadata>
+			<column>PUBLISHING HOUSE</column>
+			<type>label</type>
+		</mapping>
+	</newspaperMappings>
+	<issueMappings>
+		<mapping>
+			<metadata>PublicationDate</metadata>
+			<type>date</type>
+		</mapping>
+		<mapping>
+			<metadata>CurrentNo</metadata>
+			<type>number</type>
+		</mapping>
+		<mapping>
+			<metadata>Notes</metadata>
+			<type>longtext</type>
+		</mapping>
+	</issueMappings>
+</config_plugin>

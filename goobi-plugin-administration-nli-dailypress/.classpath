@@ -8,5 +8,26 @@
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/jspf.core-1.0.0.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-3.6-20091214.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-contrib-3.6-20091214.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-ooxml-3.6-20091214.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-ooxml-schemas-3.6-20091214.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-scratchpad-3.6-20091214.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/chronicle-3.2.1.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/chronicle-logger-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/chronicle-logger-log4j-1-1.0.1.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/lang-6.4.6.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/jsf-api-2.2.12.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/jsf-impl-2.2.12.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/log4j-over-slf4j-1.7.21.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/slf4j-api-1.7.21.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/jstl-api-1.2.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/jstl-impl-1.2.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/ugh-3.0.jar" sourcepath="/ugh_new"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
