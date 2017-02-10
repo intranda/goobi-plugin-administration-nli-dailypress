@@ -174,7 +174,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 				NewspaperIssue.dateYearFormat.format(issue.getIssueDate()) + "_ " + 
 				NewspaperIssue.dateMonthFormat.format(issue.getIssueDate()) + "_ " + 
 				NewspaperIssue.dateDayFormat.format(issue.getIssueDate());
-		return name.replaceAll("\\W", "");
+		return name.replaceAll("\\W", "").replace("__", "_");
 	}
 	
 	public void setSingleCmsID(String cmsId) {
