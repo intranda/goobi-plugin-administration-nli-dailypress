@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config_plugin>
+	<workflow>
+		<name>DailyPress</name>
+	</workflow>
+	<ruleset>
+		<newspaperType>Newspaper</newspaperType>
+		<issueType>NewspaperIssue</issueType>
+	</ruleset>
+    <allowedFileTypes>/(\.|\/)(gif|jpe?g|png|tiff?|jp2|pdf)$/</allowedFileTypes>
     <newspaperTablePath>/home/florian/git/goobi-plugin-administration-nli-dailypress/goobi-plugin-administration-nli-dailypress/test/resources/DailyPress_SamplePapers.xlsx</newspaperTablePath>
-	<newspaperMappings identifierRow="1" identifierColumn="1">
+	<metadataMappings identifierRow="1" identifierColumn="1">
 		<mapping>
 			<metadata>TitleDocMain</metadata>
 			<column>TITLE</column>
@@ -13,23 +21,24 @@
 			<type>label</type>
 		</mapping>
 		<mapping>
-			<metadata>Publisher</metadata>
+			<metadata>PublisherName</metadata>
 			<column>PUBLISHING HOUSE</column>
 			<type>label</type>
 		</mapping>
-	</newspaperMappings>
-	<issueMappings>
 		<mapping>
-			<metadata>PublicationDate</metadata>
+			<metadata>DateIssued</metadata>
+			<column>issueDate</column>
 			<type>date</type>
 		</mapping>
 		<mapping>
 			<metadata>CurrentNo</metadata>
+			<column>issueNumber</column>
 			<type>number</type>
 		</mapping>
 		<mapping>
-			<metadata>Notes</metadata>
+			<metadata>Comment</metadata>
+			<column>issueComment</column>
 			<type>longtext</type>
 		</mapping>
-	</issueMappings>
+	</metadataMappings>
 </config_plugin>

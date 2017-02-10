@@ -1,20 +1,27 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:composite="http://xmlns.jcp.org/jsf/composite" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:x="http://myfaces.apache.org/tomahawk" xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:x="http://myfaces.apache.org/tomahawk" 
+	xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites" 
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui">
 
     <composite:interface>
     </composite:interface>
 
     <composite:implementation>
         
-    <link type="text/css" rel="stylesheet" href="template/css/plugins/datepicker/datepicker.min.css" />
     <link type="text/css" rel="stylesheet" href="#{AdministrationForm.administrationPlugin.title}/dailyPress.css" />
     
     <script type="text/javascript" src="template/js/reactiveX/rx.lite.min.js" />
     <script type="text/javascript" src="template/js/q-promises/q.min.js" />
-    <script type="text/javascript" src="template/js/plugins/datepicker/bootstrap-datepicker.js"/>
     <script type="text/javascript" src="#{AdministrationForm.administrationPlugin.title}/dailyPress.js" />
     
     
-        <h:form id="dailypressform" prependId="false" styleClass="form-horizontal form-bordered">
+        <h:form id="dailypressform" prependId="false" styleClass="form-horizontal form-bordered"  enctype="multipart/form-data">
             <div class="row">
                 <div class="col-sm-12">
                     <div class="box box-color box-bordered lightgrey">
@@ -72,17 +79,16 @@
 											<h:outputText value="#{msgs.search}" />
 											<f:ajax execute="searchGroup" render="newspaper_metadata" onevent="executeNewspaperSearch"></f:ajax>
 										</h:commandLink>
-<!-- 										<a class="btn font-size-s padding-sides-more" id="cms_id_search_btn">#{msgs.search} -->
-<!-- 										</a> -->
 									</div>
 								</div>
 								
-								<!-- Field for Issue Number -->
+								<!-- Field for ajax loader Number -->
                                 <h:panelGroup styleClass="form-group" id="newspaper_metadata_waiting">                                    
 									<div id="ajaxloader_newspaperquery" class="ajaxloader">
                                             <img src="template/img/goobi/ajaxloader2.gif" />
                                     </div>
 								</h:panelGroup>
+								<!-- Field for newspaper metadata -->
 								<h:panelGroup layout="block" styleClass="form-group" id="newspaper_metadata">
 									<h:panelGroup  rendered="#{AdministrationForm.administrationPlugin.newspaperSelected}">
 										<div class="col-sm-3 control-label">
@@ -105,11 +111,56 @@
 										<h4 class="alert-message" id="missing_newspaper_message"><i class="fa fa-warning"/>#{msgs.dailypress_no_newspaper_dataset_found}</h4>
 									</h:panelGroup>
 								</h:panelGroup>
+								
+								<!-- Field for Issue Number -->
 								<intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_NliDailyPress_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueNumber}" fieldStyle="form-control" required="true" />
 			                    <!-- Field for Issue Date -->
-								<intranda:formInputText name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control date" required="true" />
+								<intranda:formInputCalendar name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control date" required="true" />
 			                    <!-- Field for Issue Comment -->
 								<intranda:formInputTextArea name="singleIssueComment" label="#{msgs.plugin_NliDailyPress_singleIssueComment}" field="#{AdministrationForm.administrationPlugin.singleIssueComment}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueComment}" fieldStyle="form-control" required="true" />
+			                    
+			                    <!-- Field for file upload -->
+			                    <div class="form-group ">
+									<div id="fileupload_label" class="col-sm-3 control-label">
+										<h:outputLabel for="fileUpload" value="#{msgs.plugin_NliDailyPress_uploadFiles}" />
+										<h:panelGroup rendered="true">
+											<i class="fa fa-asterisk pull-right font-asterisk"/>
+										</h:panelGroup>
+									</div>
+									<div class="col-sm-9 no-padding" >
+									<h:panelGroup layout="block"  id="file_list" class="col-sm-3">
+										<ul>
+											<ui:repeat var="uploadedFile" value="#{AdministrationForm.administrationPlugin.uploadedFiles}">
+												<li class="uploaded-file-item #{uploadedFile.valid ? 'valid':'invalid'}">
+													<h:outputLabel value="#{uploadedFile.fileName}"></h:outputLabel>
+												</li>
+											</ui:repeat>
+										</ul>
+									</h:panelGroup>
+									<div id="file_upload_actions" class="col-sm-6">
+										<div class="col-sm-6">
+											<p:fileUpload fileUploadListener="#{AdministrationForm.administrationPlugin.handleFileUpload}" 
+						                      id="upload" 
+						                      auto="true"
+						                      style="text-align:center;"
+						                      multiple="true" 
+						                      dragDropSupport="true" 
+						                      label="#{msgs.selectFiles}" 
+						                      allowTypes="#{AdministrationForm.administrationPlugin.allowedTypes}"
+						                      update="file_list">
+<!-- 						                      <f:ajax render="file_list"></f:ajax> -->
+						                      </p:fileUpload>
+										</div>
+										<div class="col-sm-6">
+											<h:commandLink styleClass="btn font-size-s padding-sides-more" id="delete_all_uploaded_files"
+											action="#{AdministrationForm.administrationPlugin.deleteAllUploadedFiles}">
+												<h:outputText value="#{msgs.plugin_NliDailyPress_delete_all_uploaded_files}" />
+												<f:ajax render="file_list"></f:ajax>
+											</h:commandLink>
+										</div>
+									</div>
+									</div>
+								</div>
 			                    
 			                    <!-- Form action -->
 								<div class="form-actions">

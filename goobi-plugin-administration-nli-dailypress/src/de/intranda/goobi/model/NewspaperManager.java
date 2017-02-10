@@ -21,8 +21,8 @@ public class NewspaperManager {
 	
 	public NewspaperManager(XMLConfiguration config) throws ConfigurationException, IOException{
 		String excelPath = config.getString("newspaperTablePath");
-		Integer identifierColumn = config.getInteger("newspaperMappings/@identifierColumn", null);
-		Integer identifierRow = config.getInteger("newspaperMappings/@identifierRow", null);
+		Integer identifierColumn = config.getInteger("metadataMappings/@identifierColumn", null);
+		Integer identifierRow = config.getInteger("metadataMappings/@identifierRow", null);
 		if(excelPath != null) {
 			this.map = new ExcelDataReader().read(new File(excelPath), identifierColumn, identifierRow);
 		} else {

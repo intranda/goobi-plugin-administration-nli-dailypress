@@ -1,9 +1,9 @@
 
 $(document).ready(function() {
 	
-	$('.form-control.date').datepicker({
-		format: "yyyy/mm/dd"
-	});
+//	$('.form-control.date').datepicker({
+//		format: "yyyy/mm/dd"
+//	});
 	
 //	$("#cms_id_search_btn").on("click", function() {
 //		$("#newspaper_metadata_waiting").show();

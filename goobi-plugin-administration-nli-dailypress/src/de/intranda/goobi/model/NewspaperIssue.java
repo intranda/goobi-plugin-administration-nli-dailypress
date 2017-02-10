@@ -19,5 +19,13 @@ public class NewspaperIssue {
 	public NewspaperIssue(Newspaper newspaper) {
 		this.newspaper = newspaper;
 	}
+
+	public Map<String, String> getMetadataMap() {
+		HashMap<String, String> map = new HashMap<>();
+		map.put("issueNumber", issueNumber);
+		map.put("issueDate", issueDate);
+		map.put("issueComment", issueComment);
+		return map;
+	}
 	
 }
