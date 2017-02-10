@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class NewspaperManagerTest {
 	
-	private static final String CONFIG_PATH = "/home/florian/git/goobi-plugin-administration-nli-dailypress/goobi-plugin-administration-nli-dailypress/plugin_NliDailyPressPlugin.xml";
+	private static final String CONFIG_PATH = "test/resources/plugin_NliDailyPressPlugin.xml";
 
 	@Before
 	public void setUp() throws Exception {

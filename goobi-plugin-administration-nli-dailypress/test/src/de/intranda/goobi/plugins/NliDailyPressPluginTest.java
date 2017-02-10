@@ -1,7 +1,5 @@
 package de.intranda.goobi.plugins;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 
 import org.apache.commons.configuration.XMLConfiguration;
@@ -15,7 +13,7 @@ import org.junit.Test;
 public class NliDailyPressPluginTest {
 	
 	NliDailyPressPlugin plugin;
-	String configPath = "plugin_NliDailyPressPlugin.xml";
+	String configPath = "test/resources/plugin_NliDailyPressPlugin.xml";
 
 	@Before
 	public void setUp() throws Exception {
@@ -38,7 +36,7 @@ public class NliDailyPressPluginTest {
 	@Test
 	public void testGetMetadataForColumn() {
 		Assert.assertEquals("TitleDocMain", plugin.getMetadataNameForColumn("TITLE"));
-		Assert.assertEquals("Publisher", plugin.getMetadataNameForColumn("PUBLISHING HOUSE"));
+		Assert.assertEquals("PublisherName", plugin.getMetadataNameForColumn("PUBLISHING HOUSE"));
 	}
 
 }
