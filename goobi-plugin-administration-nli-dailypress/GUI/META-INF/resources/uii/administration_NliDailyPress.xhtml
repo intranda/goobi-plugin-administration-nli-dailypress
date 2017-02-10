@@ -92,23 +92,23 @@
 								<h:panelGroup layout="block" styleClass="form-group" id="newspaper_metadata">
 									<h:panelGroup  rendered="#{AdministrationForm.administrationPlugin.newspaperSelected}">
 										<div class="col-sm-3 control-label">
-											<h:outputLabel value="#{msgs.dailypress_record}" />
+											<h:outputLabel value="#{msgs.plugin_NliDailyPress_record}" />
 										</div>
 										<div class="col-sm-9">
 											<dl class="dl-horizontal">
-												<dt>#{msgs.dailypress_record_title}</dt>
+												<dt>#{msgs.plugin_NliDailyPress_record_title}</dt>
 												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.title}</dd>
 												
-												<dt>#{msgs.dailypress_record_place}</dt>
+												<dt>#{msgs.plugin_NliDailyPress_record_place}</dt>
 												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("PUBLISHING PLACE")}</dd>
 												
-												<dt>#{msgs.dailypress_record_publisher}</dt>
+												<dt>#{msgs.plugin_NliDailyPress_record_publisher}</dt>
 												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("PUBLISHING HOUSE")}</dd>
 											</dl>
 										</div>
 									</h:panelGroup>
 									<h:panelGroup layout="block" styleClass="alert alert-error" id="missing_newspaper_metadata" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}">
-										<h4 class="alert-message" id="missing_newspaper_message"><i class="fa fa-warning"/>#{msgs.dailypress_no_newspaper_dataset_found}</h4>
+										<h4 class="alert-message" id="missing_newspaper_message"><i class="fa fa-warning"/>#{msgs.plugin_NliDailyPress_no_newspaper_dataset_found}</h4>
 									</h:panelGroup>
 								</h:panelGroup>
 								
@@ -213,17 +213,17 @@
 									<ui:repeat var="issue" varStatus="status" value="#{AdministrationForm.administrationPlugin.issueBatch}">
 										<h:panelGroup layout="block" styleClass="form-group" id="issue_metadata">
 												<div class="col-sm-3 control-label">
-													<h:outputLabel value="#{msgs.dailypress_record} #{status.index+1}" />
+													<h:outputLabel value="#{msgs.plugin_NliDailyPress_record} #{status.index+1}" />
 												</div>
 												<div class="col-sm-9">
 													<dl class="dl-horizontal">
-														<dt>#{msgs.dailypress_record_title}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_record_title}</dt>
 														<dd>#{issue.newspaper.title}</dd>
 														
-														<dt>#{msgs.dailypress_record_place}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_record_place}</dt>
 														<dd>#{issue.newspaper.getValue("PUBLISHING PLACE")}</dd>
 														
-														<dt>#{msgs.dailypress_record_publisher}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_record_publisher}</dt>
 														<dd>#{issue.newspaper.getValue("PUBLISHING HOUSE")}</dd>
 													
 														<dt>#{msgs.plugin_NliDailyPress_singleIssueDate}</dt>

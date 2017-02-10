@@ -202,7 +202,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			}
 
 		} else {
-			System.out.println("Not cmsID selected");
+			log.error("Not cmsID selected");
 			return null;
 		}
 	}
@@ -293,7 +293,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			this.issueBatch = createIssues(this.issueBatchFile.getPath());
 		} catch (ConfigurationException | IOException e) {
 			log.error(e);
-			Helper.setFehlerMeldung("Error loading newspaper issues from batch file: " + e.toString());
+			Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageReadBatchFile " + e.toString());
 		}
 		
 	}
@@ -367,7 +367,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			String workflowName) {
 
 		if (ProcessManager.countProcesses("Titel='" + processTitle + "'") > 0) {
-			Helper.setFehlerMeldung("processAlreadyInUse");
+			Helper.setFehlerMeldung("ProcessCreationErrorTitleAllreadyInUse");
 			return null;
 		}
 
@@ -409,7 +409,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		} catch (Exception e) {
 			ProcessManager.deleteProcess(newProcess);
 			log.error(e.toString(), e);
-			Helper.setFehlerMeldung("Failed to create mets file: " + e.toString());
+			Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageCreateMetsFile " + e.toString());
 			return null;
 		}
 		
@@ -422,7 +422,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			return null;
 		}
 
-		Helper.setMeldung("Created process " + processTitle);
+		Helper.setMeldung("plugin_NliDailyPress_successMessageCreatedProcess " + processTitle);
 		return newProcess;
 
 	}
