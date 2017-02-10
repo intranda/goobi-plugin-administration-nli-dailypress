@@ -54,6 +54,18 @@ public class NewspaperIssue {
 		return map;
 	}
 	
+	public void setIssueComment(String comment) {
+		if(comment.matches("\\d")) {
+			IssueType type = IssueType.get(Integer.parseInt(comment));
+			if(type != null) {
+				comment = type.name;
+			} else {
+				
+			}
+		}
+		this.issueComment  = comment;
+	}
+	
 	public static enum IssueType {
 		printedIssue(1, "Printed issue"),
 		digitalIssue(2, "Digital issue"),
