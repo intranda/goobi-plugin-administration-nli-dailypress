@@ -113,7 +113,7 @@
 								</h:panelGroup>
 								
 								<!-- Field for Issue Number -->
-								<intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_NliDailyPress_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueNumber}" fieldStyle="form-control" required="true" />
+								<intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_NliDailyPress_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueNumber}" fieldStyle="form-control" required="false" />
 			                    <!-- Field for Issue Date -->
 								<intranda:formInputCalendar name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control date" required="true" />
 			                    <!-- Field for Issue Comment -->
@@ -146,7 +146,7 @@
 						                      multiple="true" 
 						                      dragDropSupport="true" 
 						                      label="#{msgs.selectFiles}" 
-						                      allowTypes="#{AdministrationForm.administrationPlugin.allowedTypes}"
+						                      allowTypes="/#{AdministrationForm.administrationPlugin.allowedTypes}/"
 						                      update="file_list">
 <!-- 						                      <f:ajax render="file_list"></f:ajax> -->
 						                      </p:fileUpload>
@@ -180,6 +180,72 @@
 							
 							<h:panelGroup
 								rendered="#{NavigationForm.uiStatus.nliDailyPress_singleImport == 'tab2'}">
+								
+								 <!-- Field for excel file upload -->
+			                    <div class="form-group ">
+									<div id="batch_file_upload_label" class="col-sm-3 control-label">
+										<h:outputLabel for="batch_file_display" value="#{msgs.plugin_NliDailyPress_uploadIssueBatchFile}" />
+									</div>
+									<div class="col-sm-9 no-padding"  id="batch_file_upload_wrapper">
+										<h:panelGroup id="batch_file_display" styleClass="col-sm-3">										
+											<h:outputLabel  value="#{AdministrationForm.administrationPlugin.issueBatchFile.fileName}"></h:outputLabel>
+										</h:panelGroup>
+										<div id="batch_file_upload_actions" class="col-sm-6">
+											<div class="col-sm-6">
+												<p:fileUpload fileUploadListener="#{AdministrationForm.administrationPlugin.handleBatchFileUpload}" 
+							                      id="batch_file_upload" 
+							                      auto="true"
+							                      style="text-align:center;"
+							                      multiple="true" 
+							                      dragDropSupport="true" 
+							                      label="#{msgs.selectFile}" 
+							                      update="@form"
+							                      fileLimit="1" 
+							                      allowTypes="/(\.|\/)(xlsx|xls)$/">
+							                      </p:fileUpload>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<!-- Issue list -->
+								<h:panelGroup id="issue_list">
+									<ui:repeat var="issue" varStatus="status" value="#{AdministrationForm.administrationPlugin.issueBatch}">
+										<h:panelGroup layout="block" styleClass="form-group" id="issue_metadata">
+												<div class="col-sm-3 control-label">
+													<h:outputLabel value="#{msgs.dailypress_record} #{status.index+1}" />
+												</div>
+												<div class="col-sm-9">
+													<dl class="dl-horizontal">
+														<dt>#{msgs.dailypress_record_title}</dt>
+														<dd>#{issue.newspaper.title}</dd>
+														
+														<dt>#{msgs.dailypress_record_place}</dt>
+														<dd>#{issue.newspaper.getValue("PUBLISHING PLACE")}</dd>
+														
+														<dt>#{msgs.dailypress_record_publisher}</dt>
+														<dd>#{issue.newspaper.getValue("PUBLISHING HOUSE")}</dd>
+													
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueDate}</dt>
+														<dd>#{issue.issueDate}</dd>
+														
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueNumber}</dt>
+														<dd>#{issue.issueNumber}</dd>
+														
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueComment}</dt>
+														<dd>#{issue.issueComment}</dd>
+														
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueType}</dt>
+														<dd>#{issue.issueType.name}</dd>
+														
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueFileCount}</dt>
+														<dd>#{issue.files.size()}</dd>
+													</dl>
+												</div>
+										</h:panelGroup>
+									</ui:repeat>
+								</h:panelGroup>
+								
 								
 								<!-- Form action -->
 								<div class="form-actions">

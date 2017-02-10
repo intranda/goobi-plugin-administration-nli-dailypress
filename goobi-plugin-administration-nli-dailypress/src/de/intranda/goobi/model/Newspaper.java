@@ -17,7 +17,9 @@ public class Newspaper {
 
 	public Newspaper(String cmsId, Map<String, String> metadata) {
 		this.cmsID = cmsId;
-		this.metadataMap = metadata;
+		if(metadata != null) {			
+			this.metadataMap = metadata;
+		}
 	}
 	
 	public String getValue(String metadataName) {

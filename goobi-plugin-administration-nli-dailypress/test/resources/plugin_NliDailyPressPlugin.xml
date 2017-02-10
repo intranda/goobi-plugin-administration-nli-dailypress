@@ -7,7 +7,8 @@
 		<newspaperType>Newspaper</newspaperType>
 		<issueType>NewspaperIssue</issueType>
 	</ruleset>
-    <allowedFileTypes>/(\.|\/)(gif|jpe?g|png|tiff?|jp2|pdf)$/</allowedFileTypes>
+    <uploadFilesBasePath>/opt/digiverso/goobi/import/nli</uploadFilesBasePath>
+    <allowedFileTypes>.*?\\.(gif|jpe?g|png|tiff?|jp2|pdf)$</allowedFileTypes>
     <newspaperTablePath>/home/florian/git/goobi-plugin-administration-nli-dailypress/goobi-plugin-administration-nli-dailypress/test/resources/DailyPress_SamplePapers.xlsx</newspaperTablePath>
 	<metadataMappings identifierRow="1" identifierColumn="1">
 		<mapping>
@@ -41,4 +42,24 @@
 			<type>longtext</type>
 		</mapping>
 	</metadataMappings>
+	<issueUploadMappings identifierRow="1">
+		<uploadFolder>code</uploadFolder>
+		<cmsId>cms</cmsId>
+		<mapping>
+			<column>issue</column>
+			<field>issueNumber</field>
+		</mapping>
+		<mapping>
+			<column>date</column>
+			<field>issueDate</field>
+		</mapping>
+		<mapping>
+			<column>comment</column>
+			<field>issueComment</field>
+		</mapping>
+		<mapping>
+			<column>type</column>
+			<field>issueType</field>
+		</mapping>
+	</issueUploadMappings>
 </config_plugin>

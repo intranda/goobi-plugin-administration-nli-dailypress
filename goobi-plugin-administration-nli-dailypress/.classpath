@@ -30,5 +30,9 @@
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/jstl-impl-1.2.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/ugh-3.0.jar" sourcepath="/ugh_new"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/primefaces-5.0.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/fontbox-1.7.1.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/iText-2.1.5.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/itext-rtf-2.1.5.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/pdfbox-1.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

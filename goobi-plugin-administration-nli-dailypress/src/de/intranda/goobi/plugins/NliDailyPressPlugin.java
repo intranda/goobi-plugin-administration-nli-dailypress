@@ -2,15 +2,19 @@ package de.intranda.goobi.plugins;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +22,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
@@ -27,9 +31,14 @@ import org.goobi.production.plugin.interfaces.IAdministrationPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.primefaces.event.FileUploadEvent;
 
+import de.intranda.goobi.input.ExcelDataReader;
+import de.intranda.goobi.input.PdfExtractor;
+import de.intranda.goobi.model.ExcelDataManager;
 import de.intranda.goobi.model.FileUpload;
+import de.intranda.goobi.model.IssueUploadManager;
 import de.intranda.goobi.model.Newspaper;
 import de.intranda.goobi.model.NewspaperIssue;
+import de.intranda.goobi.model.NewspaperIssue.IssueType;
 import de.intranda.goobi.model.NewspaperManager;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
@@ -58,16 +67,19 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
 	private static final String PLUGIN_NAME = "NliDailyPress";
 	
-	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	public static final NumberFormat filenameFormat = new DecimalFormat("00000000");
+
 
 	private String singleCmsID;
-	private String singleIssueNumber;
+	private Integer singleIssueNumber;
 	private Date singleIssueDate;
 	private String singleIssueComment;
 	private Newspaper selectedNewspaper = null;
 	private NewspaperManager newspaperManager = null;
 	private List<FileUpload> uploadedFiles = new ArrayList<>();
 	private File importFolder = null;
+	private FileUpload issueBatchFile = null;
+	private List<NewspaperIssue> issueBatch = new ArrayList<>();
 
 	private XMLConfiguration config;
 
@@ -98,20 +110,45 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
 	public String cancelMultipleImport() {
 		Helper.setMeldung("plugin_NliDailyPress_cancelMessageMultipleImport");
+		resetIssueBatch();
 		return "";
 	}
 
 	public String executeSingleImport() {
 		NewspaperIssue singleIssue = new NewspaperIssue(selectedNewspaper);
-		singleIssue.setIssueDate(dateFormat.format(singleIssueDate));
+		singleIssue.setIssueDate(singleIssueDate);
 		singleIssue.setIssueNumber(singleIssueNumber);
 		singleIssue.setIssueComment(singleIssueComment);
-		if(createProcess(singleIssue, getUploadedFiles(), createProcessName(singleIssue), getWorkflowName())) {
+		singleIssue.setFiles(getUploadedFiles());
+		if(createProcess(singleIssue, createProcessName(singleIssue), getWorkflowName()) != null) {
 			Helper.setMeldung("plugin_NliDailyPress_successMessageSingleImport");			
 			resetSingleIssue();
+		} else {
+			Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageSingleImport");
 		}
 		return "";
 	}
+	
+	public String executeMultipleImport() {
+		List<Process> processes = new ArrayList<>();
+		for (NewspaperIssue newspaperIssue : issueBatch) {
+			Process p = createProcess(newspaperIssue,  createProcessName(newspaperIssue), getWorkflowName());
+			if(p != null) {
+				processes.add(p);
+			} else {				
+				Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageMultipleImport");
+				for (Process process : processes) {
+					ProcessManager.deleteProcess(process);
+				}
+				return "";
+			}
+		}
+		
+		Helper.setMeldung("plugin_NliDailyPress_successMessageMultipleImport");
+		resetIssueBatch();
+		return "";
+	}
+
 
 	protected String getWorkflowName() {
 		return getConfig().getString("workflow/name");
@@ -131,15 +168,15 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	}
 
 	private String createProcessName(NewspaperIssue issue) {
-		String name = issue.getNewspaper().getCmsID() + "_" + issue.getIssueNumber() + "_" + issue.getIssueDate();
+		System.out.println("Issue number  = " + issue.getIssueNumber());
+		String name = issue.getNewspaper().getCmsID() + "_" + 
+				(issue.getIssueNumber() != null ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber()) : "") + "_" + 
+				NewspaperIssue.dateYearFormat.format(issue.getIssueDate()) + "_ " + 
+				NewspaperIssue.dateMonthFormat.format(issue.getIssueDate()) + "_ " + 
+				NewspaperIssue.dateDayFormat.format(issue.getIssueDate());
 		return name.replaceAll("\\W", "");
 	}
-
-	public String executeMultipleImport() {
-		Helper.setMeldung("plugin_NliDailyPress_successMessageMultipleImport");
-		return "";
-	}
-
+	
 	public void setSingleCmsID(String cmsId) {
 		this.singleCmsID = cmsId;
 		System.out.println("Selected " + cmsId);
@@ -147,22 +184,26 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	}
 
 	public void searchNewspaper() {
-		if (this.singleCmsID != null) {
+		this.selectedNewspaper = searchNewspaper(this.singleCmsID);
+	}
+	
+	private Newspaper searchNewspaper(String cmsId) {
+		if (cmsId != null) {
 			Map<String, String> newspaperData;
 			try {
-				newspaperData = getNewspaperManager().getRow(this.singleCmsID);
-				for (String key : newspaperData.keySet()) {
-					System.out.println(key + ": " + newspaperData.get(key));
+				newspaperData = getNewspaperManager().getRow(cmsId);
+				if(newspaperData == null) {
+					throw new NullPointerException();
 				}
-				this.selectedNewspaper = new Newspaper(this.singleCmsID, newspaperData);
+				return new Newspaper(cmsId, newspaperData);
 			} catch (NullPointerException e) {
-				System.out.println("no newspaper found for " + this.singleCmsID);
-				this.selectedNewspaper = null;
+				log.debug("no newspaper found for " + this.singleCmsID);
+				return null;
 			}
 
 		} else {
 			System.out.println("Not cmsID selected");
-			this.selectedNewspaper = null;
+			return null;
 		}
 	}
 
@@ -209,6 +250,14 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		}
 		return this.uploadedFiles;
 	}
+	
+	private void resetIssueBatch() {
+		this.issueBatch = new ArrayList<>();
+		if(this.issueBatchFile != null) {
+			this.issueBatchFile.delete();
+		}
+		this.issueBatchFile = null;
+	}
 
 	public void handleFileUpload(FileUploadEvent event) {
 		FileUpload upload;
@@ -223,13 +272,38 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
 		this.uploadedFiles.add(upload);
 	}
+	
+	public void handleBatchFileUpload(FileUploadEvent event) {
+		
+		resetIssueBatch();
+		FileUpload upload;
+		try {
+			upload = copyFile(event.getFile().getFileName(), event.getFile().getInputstream());
+
+		} catch (IOException e) {
+			log.error(e);
+			upload = new FileUpload();
+			upload.setPath(new File(event.getFile().getFileName()));
+		}
+
+
+		this.issueBatchFile = upload;
+		
+		try {
+			this.issueBatch = createIssues(this.issueBatchFile.getPath());
+		} catch (ConfigurationException | IOException e) {
+			log.error(e);
+			Helper.setFehlerMeldung("Error loading newspaper issues from batch file: " + e.toString());
+		}
+		
+	}
 
 	public FileUpload copyFile(String fileName, InputStream in) {
-		OutputStream out = null;
 
 		File file = new File(getImportFolder(true), fileName);
 		FileUpload upload = new FileUpload();
 		upload.setPath(file);
+		OutputStream out = null;
 		try {
 
 			// write the inputStream to a FileOutputStream
@@ -276,7 +350,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	}
 
 	public String getAllowedTypes() {
-		return getConfig().getString("allowedFileTypes", "/(\\.|\\/)(gif|jpe?g|png|tiff?|jp2|pdf)$/");
+		return getConfig().getString("allowedFileTypes", "/.*?\\.(gif|jpe?g|png|tiff?|jp2|pdf)$/");
 	}
 
 	public void deleteAllUploadedFiles() {
@@ -289,12 +363,12 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		this.uploadedFiles = new ArrayList<>();
 	}
 
-	private boolean createProcess(NewspaperIssue issue, List<FileUpload> files, String processTitle,
+	private Process createProcess(NewspaperIssue issue, String processTitle,
 			String workflowName) {
 
 		if (ProcessManager.countProcesses("Titel='" + processTitle + "'") > 0) {
 			Helper.setFehlerMeldung("processAlreadyInUse");
-			return false;
+			return null;
 		}
 
 		BeanHelper bhelp = new BeanHelper();
@@ -318,15 +392,15 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		} catch (DAOException e) {
 			log.error(e);
 			Helper.setFehlerMeldung(e.toString());
-			return false;
+			return null;
 		}
 
 		createProcessProperty("Template", template.getTitel(), newProcess);
 		createProcessProperty("TemplateID", template.getId() + "", newProcess);
 		createProcessProperty("CMS ID", issue.getNewspaper().getCmsID(), newProcess);
 		createProcessProperty("Newspaper", issue.getNewspaper().getTitle(), newProcess);
-		createProcessProperty("Issue number", issue.getIssueNumber(), newProcess);
-		createProcessProperty("Issue date", issue.getIssueDate(), newProcess);
+		createProcessProperty("Issue number", issue.getIssueNumber() != null ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber()) : "-", newProcess);
+		createProcessProperty("Issue date", NewspaperIssue.dateFormat.format(issue.getIssueDate()), newProcess);
 		createProcessProperty("Issue commenet", issue.getIssueComment(), newProcess);
 
 		try {
@@ -336,27 +410,77 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			ProcessManager.deleteProcess(newProcess);
 			log.error(e.toString(), e);
 			Helper.setFehlerMeldung("Failed to create mets file: " + e.toString());
-			return false;
+			return null;
 		}
 		
 		try {
-			File masterDir = new File(newProcess.getImagesOrigDirectory(true));
-			if(!masterDir.isDirectory()) {
-				masterDir.mkdirs();
-			}
-			for (FileUpload fileUpload : files) {
-				FileUtils.copyFile(fileUpload.getPath(), new File(masterDir, fileUpload.getFileName()));
-			}
+			copyMediaFiles(issue.getFiles(), newProcess);
 		} catch (IOException | InterruptedException | SwapException | DAOException e) {
 			ProcessManager.deleteProcess(newProcess);
 			log.error(e);
 			Helper.setFehlerMeldung(e.toString());
-			return false;
+			return null;
 		}
 
 		Helper.setMeldung("Created process " + processTitle);
-		return true;
+		return newProcess;
 
+	}
+
+	/**
+	 * @param files
+	 * @param newProcess
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SwapException
+	 * @throws DAOException
+	 */
+	private void copyMediaFiles(List<FileUpload> files, Process newProcess)
+			throws IOException, InterruptedException, SwapException, DAOException {
+		File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
+		File pdfDir = new File(newProcess.getPdfDirectory());
+		File ocrTextDir = new File(newProcess.getTxtDirectory());
+		for (FileUpload fileUpload : files) {
+			if(fileUpload.isImage()) {				
+				if(!masterImagesDir.isDirectory()) {
+					masterImagesDir.mkdirs();
+				}
+				FileUtils.copyFile(fileUpload.getPath(), new File(masterImagesDir, fileUpload.getFileName()));
+			} else if(fileUpload.isPDF()) {
+				if(!pdfDir.exists()) {
+					pdfDir.mkdirs();
+				}
+				if(!ocrTextDir.exists()) {
+					ocrTextDir.mkdirs();
+				}
+				new PdfExtractor().extractPdfs(fileUpload.getPath(), pdfDir, ocrTextDir);
+			}
+		}
+		
+		renameFiles(masterImagesDir);
+		renameFiles(pdfDir);
+		renameFiles(ocrTextDir);
+		
+	}
+
+	/**
+	 * @param directory
+	 */
+	private void renameFiles(File directory) {
+		if(directory.listFiles() != null) {			
+			List<File> files = Arrays.asList(directory.listFiles());
+			Collections.sort(files);
+			Collections.reverse(files);
+			int number = files.size();
+			for (File file : files) {
+				file.renameTo(new File(
+						file.getParent(), 
+						filenameFormat.format(number)
+						+ FilenameUtils.EXTENSION_SEPARATOR_STR
+						+ FilenameUtils.getExtension(file.getName())));
+				number--;
+			}
+		}
 	}
 
 	/**
@@ -430,6 +554,112 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
 	protected String getMetadataNameForColumn(String column) {
 		return getConfig().getString("metadataMappings/mapping[column='" + column + "']/metadata");
+	}
+	
+	protected List<NewspaperIssue> createIssues(File excelFile) throws ConfigurationException, IOException {
+		NewspaperManager manager = new IssueUploadManager(excelFile, getConfig());
+		String cmsColumn = getConfig().getString("issueUploadMappings/cmsId", "cms");
+		String folderColumn = getConfig().getString("issueUploadMappings/uploadFolder", "code");
+		List<String> fields = getConfig().getList("issueUploadMappings/mapping/column");
+		
+		List<NewspaperIssue> issues = new ArrayList<>();
+		Iterator<String> rows = manager.getIdentifiers().iterator();
+		//skip first row
+		if(rows.hasNext()) {
+			rows.next();
+		}
+		while(rows.hasNext()) {
+			String rowNumber = rows.next();
+			Map<String, String> rowData = manager.getRow(rowNumber);
+			try {
+				NewspaperIssue issue = createIssue(cmsColumn, fields, rowData);
+				String folderName = rowData.get(folderColumn);
+				addFiles(issue, folderName);
+				issues.add(issue);
+		} catch(NullPointerException e) {
+			log.warn("No newspaper with cmsId '" + rowData.get(cmsColumn) + "' registered");
+		}
+
+		}
+		return issues;
+	}
+
+	/**
+	 * @param issue
+	 * @param folderName
+	 */
+	private void addFiles(NewspaperIssue issue, String folderName) {
+		File mediaFolder = new File(getConfig().getString("uploadFilesBasePath", "/opt/digiverso/goobi/import/"), folderName);
+		if(mediaFolder.isDirectory() && mediaFolder.list().length > 0) {
+			issue.setFiles(getFileUploads(mediaFolder));
+		} else {
+			log.warn("No files found in " + mediaFolder);
+		}
+	}
+
+	private List<FileUpload> getFileUploads(File mediaFolder) {
+		List<FileUpload> files = new ArrayList<FileUpload>();
+		if(mediaFolder != null) {			
+			for (File file : mediaFolder.listFiles(getMediaFilter())) {
+				FileUpload upload = new FileUpload();
+				upload.setPath(file);
+				files.add(upload);
+			}
+		}
+		return files;
+	}
+
+	private FilenameFilter getMediaFilter() {
+		return new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				System.out.println(getAllowedTypes());
+				return name.matches(getAllowedTypes());
+			}
+		};
+	}
+
+	/**
+	 * @param cmsColumn
+	 * @param folderColumn
+	 * @param fields
+	 * @param issues
+	 * @param rowNumber
+	 * @param rowData
+	 */
+	private NewspaperIssue createIssue(String cmsColumn, List<String> fields, Map<String, String> rowData) {
+		String cms = rowData.get(cmsColumn);
+			NewspaperIssue issue = new NewspaperIssue(searchNewspaper(cms));
+			for (String field : fields) {
+				String value = rowData.get(field);
+				String fieldName = getConfig().getString("issueUploadMappings/mapping[column='"+field+"']/field");
+				if(value != null && fieldName != null) {
+					try {							
+						switch(fieldName) {
+						case "issueDate":
+							issue.setIssueDate(ExcelDataReader.inputDateFormat.parse(value));
+							break;
+						case "issueNumber":
+							issue.setIssueNumber(Integer.parseInt(value));
+							break;
+						case "issueType":
+							issue.setIssueType(IssueType.get(Integer.parseInt(value)));
+							break;
+						case "issueComment":
+							issue.setIssueComment(value);
+							break;
+						default: 
+							log.warn("Unknown field " + fieldName);
+						}
+						
+					} catch(ParseException | IllegalArgumentException e) {
+						log.warn("Unable to parse value '" + value +"' in column" + field);
+					}
+				}
+			}
+			return issue;
+
 	}
 
 }

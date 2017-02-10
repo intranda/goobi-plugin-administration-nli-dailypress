@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,6 +20,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelDataReader {
+	
+	public static final DateFormat inputDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
 	
 	/**
 	 * @param importFile
@@ -83,8 +90,13 @@ public class ExcelDataReader {
                 String key = Integer.toString(j+1);
                 if(identifierColumn != null) {
                 	Cell identifierCell = row.getCell(identifierColumn-1);
-                	if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {                		
-                		key = Integer.toString((int)identifierCell.getNumericCellValue());
+                	if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_NUMERIC) { 
+                		if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
+	                		Date date = identifierCell.getDateCellValue();
+	                		key = inputDateFormat.format(date);
+                		} else {                			
+                			key = Integer.toString((int)identifierCell.getNumericCellValue());
+                		}
                 	} else if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_STRING) {
                 		key = identifierCell.getStringCellValue();
                 	}
@@ -110,7 +122,12 @@ public class ExcelDataReader {
             if(identifierRow != null && identifierRow.getCell(intKey-1) != null) {
             	Cell identifierCell = identifierRow.getCell(intKey-1);
             	if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {                		
-            		key = Integer.toString((int)identifierCell.getNumericCellValue());
+            		if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
+                		Date date = identifierCell.getDateCellValue();
+                		key = inputDateFormat.format(date);
+            		} else {                			
+            			key = Integer.toString((int)identifierCell.getNumericCellValue());
+            		}
             	} else if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_STRING) {
             		key = identifierCell.getStringCellValue();
             	}
@@ -128,8 +145,13 @@ public class ExcelDataReader {
             String cellContent = null;
             switch (cell.getCellType()) {
                 case Cell.CELL_TYPE_NUMERIC:
-                    Double d = cell.getNumericCellValue();
-                    cellContent = getAsIntOrDouble(d);
+                	if(HSSFDateUtil.isCellDateFormatted(cell)) {
+                		Date date = cell.getDateCellValue();
+                		cellContent = inputDateFormat.format(date);
+                	} else {                		
+                		Double d = cell.getNumericCellValue();
+                		cellContent = getAsIntOrDouble(d);
+                	}
                     break;
                 case Cell.CELL_TYPE_STRING:
                     cellContent = cell.getStringCellValue();
