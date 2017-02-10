@@ -53,13 +53,14 @@
 			<column>date</column>
 			<field>issueDate</field>
 		</mapping>
-		<mapping>
-			<column>comment</column>
-			<field>issueComment</field>
-		</mapping>
+<!-- 		<mapping> -->
+<!-- 			<column>comment</column> -->
+<!-- 			<field>issueComment</field> -->
+<!-- 		</mapping> -->
 		<mapping>
 			<column>type</column>
-			<field>issueType</field>
+			<field>issueComment</field>
+<!-- 			<field>issueType</field> -->
 		</mapping>
 	</issueUploadMappings>
 </config_plugin>
