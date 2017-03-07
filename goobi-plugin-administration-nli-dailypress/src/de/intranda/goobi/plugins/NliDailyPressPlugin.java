@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -69,7 +70,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
 	private static final String PLUGIN_NAME = "NliDailyPress";
 	
-	public static final NumberFormat filenameFormat = new DecimalFormat("00000000");
+	public static final NumberFormat filenameFormat = new DecimalFormat("0000");
 
 
 	private String singleCmsID;
@@ -430,10 +431,11 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		createProcessProperty("TemplateID", template.getId() + "", newProcess);
 		createProcessProperty("CMS ID", issue.getNewspaper().getCmsID(), newProcess);
 		createProcessProperty("Newspaper", issue.getNewspaper().getTitle(), newProcess);
+		createProcessProperty("Publisher", issue.getNewspaper().getValue("Publisher"), newProcess);
 		createProcessProperty("Issue number", issue.getIssueNumber() != null ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber()) : "-", newProcess);
 		createProcessProperty("Issue date", NewspaperIssue.dateFormat.format(issue.getIssueDate()), newProcess);
 		createProcessProperty("Issue comment", issue.getIssueComment(), newProcess);
-		createProcessProperty("Issue type", issue.getIssueType().name, newProcess);
+		createProcessProperty("Issue type", issue.getIssueType().name.replaceAll("\\s+", "_"), newProcess);
 
 		try {
 			Fileformat ff = createFileformat(issue ,processTitle, getPrefs());
@@ -446,7 +448,8 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		}
 		
 		try {
-			copyMediaFiles(issue.getFiles(), newProcess);
+			int numFiles = copyMediaFiles(issue.getFiles(), newProcess);
+			createProcessProperty("Pages", Integer.toString(numFiles), newProcess);
 		} catch (IOException | InterruptedException | SwapException | DAOException e) {
 			ProcessManager.deleteProcess(newProcess);
 			log.error(e);
@@ -466,14 +469,15 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	 * @throws InterruptedException
 	 * @throws SwapException
 	 * @throws DAOException
+	 * @return the number of pdf files or image files, whichever is larger
 	 */
-	private void copyMediaFiles(List<FileUpload> files, Process newProcess)
+	private int copyMediaFiles(List<FileUpload> files, Process newProcess)
 			throws IOException, InterruptedException, SwapException, DAOException {
 		File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
 		File pdfDir = new File(newProcess.getPdfDirectory());
 		File ocrTextDir = new File(newProcess.getTxtDirectory());
 		for (FileUpload fileUpload : files) {
-			if(fileUpload.isImage()) {				
+			if(fileUpload.isImage()) {		
 				if(!masterImagesDir.isDirectory()) {
 					masterImagesDir.mkdirs();
 				}
@@ -489,30 +493,35 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			}
 		}
 		
-		renameFiles(masterImagesDir);
-		renameFiles(pdfDir);
-		renameFiles(ocrTextDir);
-		
+		int numFiles = renameFiles(masterImagesDir, newProcess.getTitel());
+		numFiles = Math.max(numFiles, renameFiles(pdfDir, newProcess.getTitel()));
+		renameFiles(ocrTextDir, newProcess.getTitel());
+		return numFiles;
 	}
 
 	/**
 	 * @param directory
+	 * @return the number of renamed files
 	 */
-	private void renameFiles(File directory) {
+	private int renameFiles(File directory, String baseName) {
 		if(directory.listFiles() != null) {			
 			List<File> files = Arrays.asList(directory.listFiles());
 			Collections.sort(files);
 			Collections.reverse(files);
 			int number = files.size();
 			for (File file : files) {
-				file.renameTo(new File(
-						file.getParent(), 
-						filenameFormat.format(number)
-						+ FilenameUtils.EXTENSION_SEPARATOR_STR
-						+ FilenameUtils.getExtension(file.getName())));
+				String filename = baseName + "_" + filenameFormat.format(number) + FilenameUtils.EXTENSION_SEPARATOR_STR + FilenameUtils.getExtension(file.getName());
+				file.renameTo(new File(file.getParent(), filename));
+//				file.renameTo(new File(
+//						file.getParent(), 
+//						filenameFormat.format(number)
+//						+ FilenameUtils.EXTENSION_SEPARATOR_STR
+//						+ FilenameUtils.getExtension(file.getName())));
 				number--;
 			}
+			return files.size();
 		}
+		return 0;
 	}
 
 	/**
