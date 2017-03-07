@@ -31,7 +31,7 @@ public class Newspaper {
 	}
 	
 	public String getTitle() {
-		return this.metadataMap.get("TITLE");
+		return this.metadataMap.get("Title");
 	}
 	
 }

@@ -10,57 +10,83 @@
     <uploadFilesBasePath>/opt/digiverso/goobi/import/nli</uploadFilesBasePath>
     <allowedFileTypes>.*?\\.(gif|jpe?g|png|tiff?|jp2|pdf)$</allowedFileTypes>
     <newspaperTablePath>/home/florian/git/goobi-plugin-administration-nli-dailypress/goobi-plugin-administration-nli-dailypress/test/resources/DailyPress_SamplePapers.xlsx</newspaperTablePath>
-	<metadataMappings identifierRow="1" identifierColumn="1">
+
+	<newspaperDataMappings identifierRow="1" identifierColumn="1">
 		<mapping>
-			<metadata>TitleDocMain</metadata>
-			<column>TITLE</column>
-			<type>label</type>
+			<field>Title</field>
+			<column>Title</column>
 		</mapping>
 		<mapping>
-			<metadata>PlaceOfPublication</metadata>
-			<column>PUBLISHING PLACE</column>
-			<type>label</type>
+			<field>Publisher</field>
+			<column>Publisher</column>
 		</mapping>
 		<mapping>
-			<metadata>PublisherName</metadata>
-			<column>PUBLISHING HOUSE</column>
-			<type>label</type>
+			<field>PublishingPlace</field>
+			<column>Publisher Place</column>
 		</mapping>
 		<mapping>
-			<metadata>DateIssued</metadata>
-			<column>issueDate</column>
-			<type>date</type>
+			<field>Language</field>
+			<column>Language</column>
 		</mapping>
 		<mapping>
-			<metadata>CurrentNo</metadata>
-			<column>issueNumber</column>
-			<type>number</type>
+			<field>NewspaperComment</field>
+			<column>Comments</column>
 		</mapping>
-		<mapping>
-			<metadata>Comment</metadata>
-			<column>issueComment</column>
-			<type>longtext</type>
-		</mapping>
-	</metadataMappings>
+	</newspaperDataMappings>
 	<issueUploadMappings identifierRow="1">
-		<uploadFolder>code</uploadFolder>
-		<cmsId>cms</cmsId>
+		<uploadFolder>Code</uploadFolder>
+		<cmsId>CMS</cmsId>
 		<mapping>
-			<column>issue</column>
+			<column>Issue</column>
 			<field>issueNumber</field>
 		</mapping>
 		<mapping>
-			<column>date</column>
+			<column>Date</column>
 			<field>issueDate</field>
 		</mapping>
-<!-- 		<mapping> -->
-<!-- 			<column>comment</column> -->
-<!-- 			<field>issueComment</field> -->
-<!-- 		</mapping> -->
 		<mapping>
-			<column>type</column>
-			<field>issueComment</field>
-<!-- 			<field>issueType</field> -->
+			<column>Type</column>
+			<field>issueType</field>
 		</mapping>
 	</issueUploadMappings>
+	
+	<metadataMappings>
+		<mapping>
+			<field>Title</field>
+			<metadata>TitleDocMain</metadata>
+		</mapping>
+		<mapping>
+			<column>PUBLISHING PLACE</column>
+			<metadata>PlaceOfPublication</metadata>
+		</mapping>
+		<mapping>
+			<field>Publisher</field>
+			<metadata>PublisherName</metadata>
+		</mapping>
+		<mapping>
+			<field>Language</field>
+			<metadata>DocLanguage</metadata>
+		</mapping>
+		<mapping>
+			<field>PublisherPlace</field>
+			<metadata>PlaceOfPublication</metadata>
+		</mapping>
+<!-- 		<mapping> -->
+<!-- 			<field>NewspaperComment</field> -->
+<!-- 			<metadata>Comment</metadata> -->
+<!-- 		</mapping> -->
+		<mapping>
+			<field>issueDate</field>
+			<metadata>DateIssued</metadata>
+		</mapping>
+		<mapping>
+			<field>issueNumber</field>
+			<metadata>CurrentNo</metadata>
+		</mapping>
+		<mapping>
+			<field>issueComment</field>
+			<metadata>Comment</metadata>
+		</mapping>
+	</metadataMappings>
+
 </config_plugin>

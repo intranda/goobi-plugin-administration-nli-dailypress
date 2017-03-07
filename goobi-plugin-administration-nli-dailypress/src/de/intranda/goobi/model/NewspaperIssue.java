@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.primefaces.model.UploadedFile;
 
+import de.intranda.goobi.model.NewspaperIssue.IssueType;
 import lombok.Data;
 
 @Data
@@ -95,6 +96,15 @@ public class NewspaperIssue {
 				}
 			}
 			throw new IllegalArgumentException("Unknown issue type: " + code);
+		}
+
+		public static IssueType get(String name) {
+			for(IssueType type : IssueType.values()) {
+				if(type.name.equals(name)) {
+					return type;
+				}
+			}
+			throw new IllegalArgumentException("Unknown issue type: " + name);
 		}
 	}
 		

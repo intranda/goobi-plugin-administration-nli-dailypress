@@ -19,12 +19,12 @@ public class NewspaperManager extends ExcelDataManager {
 	}
 	
 	private static Integer getIdentifierColumn(XMLConfiguration config) {
-		Integer identifierColumn = config.getInteger("metadataMappings/@identifierColumn", null);
+		Integer identifierColumn = config.getInteger("newspaperDataMappings/@identifierColumn", null);
 		return identifierColumn;
 	}
 	
 	private static Integer getIdentifierRow(XMLConfiguration config) {
-		Integer identifierColumn = config.getInteger("metadataMappings/@identifierRow", null);
+		Integer identifierColumn = config.getInteger("newspaperDataMappings/@identifierRow", null);
 		return identifierColumn;
 	} 
 	

@@ -35,8 +35,8 @@ public class NliDailyPressPluginTest {
 
 	@Test
 	public void testGetMetadataForColumn() {
-		Assert.assertEquals("TitleDocMain", plugin.getMetadataNameForColumn("TITLE"));
-		Assert.assertEquals("PublisherName", plugin.getMetadataNameForColumn("PUBLISHING HOUSE"));
+		Assert.assertEquals("TitleDocMain", plugin.getMetadataNameForField("Title"));
+		Assert.assertEquals("PublisherName", plugin.getMetadataNameForField("Publisher"));
 	}
 
 }

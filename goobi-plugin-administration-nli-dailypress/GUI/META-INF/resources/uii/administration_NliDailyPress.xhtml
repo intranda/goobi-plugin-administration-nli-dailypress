@@ -56,6 +56,15 @@
                         	<h:panelGroup
 								rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
 							
+								<!-- Field for record type -->
+								<intranda:formInputDropDown 
+								name="singleIssueType" 
+								label="#{msgs.plugin_NliDailyPress_singleIssueType}" 
+								field="#{AdministrationForm.administrationPlugin.singleIssueType}" 
+								selectItems="#{AdministrationForm.administrationPlugin.issueTypes}" 
+								help="#{msgs.helpPlugin_NliDailyPress_singleIssueType}" 
+								fieldStyle="form-control" required="true" />
+
 								<!-- Field for CMS ID -->								
 								<div class="form-group">
 									<div class="col-sm-3 control-label">
@@ -97,13 +106,13 @@
 										<div class="col-sm-9">
 											<dl class="dl-horizontal">
 												<dt>#{msgs.plugin_NliDailyPress_record_title}</dt>
-												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.title}</dd>
-												
-												<dt>#{msgs.plugin_NliDailyPress_record_place}</dt>
-												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("PUBLISHING PLACE")}</dd>
+												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Title")}</dd>
 												
 												<dt>#{msgs.plugin_NliDailyPress_record_publisher}</dt>
-												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("PUBLISHING HOUSE")}</dd>
+												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Publisher")}</dd>
+												
+												<dt>#{msgs.plugin_NliDailyPress_record_language}</dt>
+												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Language")}</dd>
 											</dl>
 										</div>
 									</h:panelGroup>
@@ -218,13 +227,13 @@
 												<div class="col-sm-9">
 													<dl class="dl-horizontal">
 														<dt>#{msgs.plugin_NliDailyPress_record_title}</dt>
-														<dd>#{issue.newspaper.title}</dd>
-														
-														<dt>#{msgs.plugin_NliDailyPress_record_place}</dt>
-														<dd>#{issue.newspaper.getValue("PUBLISHING PLACE")}</dd>
-														
+														<dd>#{issue.newspaper.getValue("Title")}</dd>
+
 														<dt>#{msgs.plugin_NliDailyPress_record_publisher}</dt>
-														<dd>#{issue.newspaper.getValue("PUBLISHING HOUSE")}</dd>
+														<dd>#{issue.newspaper.getValue("Publisher")}</dd>
+														
+														<dt>#{msgs.plugin_NliDailyPress_record_language}</dt>
+														<dd>#{issue.newspaper.getValue("Language")}</dd>
 													
 														<dt>#{msgs.plugin_NliDailyPress_singleIssueDate}</dt>
 														<dd>#{issue.issueDate}</dd>
@@ -232,11 +241,8 @@
 														<dt>#{msgs.plugin_NliDailyPress_singleIssueNumber}</dt>
 														<dd>#{issue.issueNumber}</dd>
 														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueComment}</dt>
-														<dd>#{issue.issueComment}</dd>
-														
-<!-- 														<dt>#{msgs.plugin_NliDailyPress_singleIssueType}</dt> -->
-<!-- 														<dd>#{issue.issueType.name}</dd> -->
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueType}</dt>
+														<dd>#{issue.issueType.name}</dd>
 														
 														<dt>#{msgs.plugin_NliDailyPress_singleIssueFileCount}</dt>
 														<dd>#{issue.files.size()}</dd>

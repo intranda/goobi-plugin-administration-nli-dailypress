@@ -27,11 +27,11 @@ public class ExcelDataReaderTest {
 		File file = new File(sampleTablePath);
 		Map<String, Map<String, String>> table = new ExcelDataReader().read(file, 1, 1);
 		Assert.assertEquals("Wrong number of rows",  4, table.size());
-		Assert.assertEquals("Wrong number of columns",  4, table.get("CMS ID").size());
+		Assert.assertEquals("Wrong number of columns",  6, table.get("CMS ID").size());
 		Assert.assertTrue("Wrong key set: " + table.keySet(), table.keySet().contains("1234"));
 		Assert.assertTrue("Wrong key set: " + table.keySet(), table.keySet().contains("5678"));
 		Assert.assertTrue("Wrong key set: " + table.keySet(), table.keySet().contains("9101"));
-		Assert.assertTrue("Wrong row data in column TITLE: " + table.get("1234").values(), "Göttinger Tageblatt".equals(table.get("1234").get("TITLE")));
-		Assert.assertTrue("Wrong row data in column PUBLISHING HOUSE: " + table.get("9101").values(), "Gemeinde Rosdorf".equals(table.get("9101").get("PUBLISHING HOUSE")));
+		Assert.assertTrue("Wrong row data in column TITLE: " + table.get("1234").values(), "Göttinger Tageblatt".equals(table.get("1234").get("Title")));
+		Assert.assertTrue("Wrong row data in column PUBLISHING HOUSE: " + table.get("9101").values(), "Gemeinde Rosdorf".equals(table.get("9101").get("Publisher")));
 	}
 }

@@ -11,9 +11,11 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	private Integer singleIssueNumber;
 	private Date singleIssueDate;
 	private String singleIssueComment;
+	private String singleIssueType;
 	private Newspaper selectedNewspaper = null;
 	private NewspaperManager newspaperManager = null;
 	private List<FileUpload> uploadedFiles = new ArrayList<>();
@@ -107,6 +110,15 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		resetSingleIssue();
 		return "";
 	}
+	
+	public Collection<String> getIssueTypes() {
+		IssueType[] types = IssueType.values();
+		List<String> typeNames = new ArrayList<>(types.length);
+		for (IssueType issueType : types) {	
+			typeNames.add(issueType.name);
+		}
+		return typeNames;
+  	}
 
 	public String cancelMultipleImport() {
 		Helper.setMeldung("plugin_NliDailyPress_cancelMessageMultipleImport");
@@ -119,6 +131,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		singleIssue.setIssueDate(singleIssueDate);
 		singleIssue.setIssueNumber(singleIssueNumber);
 		singleIssue.setIssueComment(singleIssueComment);
+		singleIssue.setIssueType(IssueType.get(getSingleIssueType()));
 		singleIssue.setFiles(getUploadedFiles());
 		if(createProcess(singleIssue, createProcessName(singleIssue), getWorkflowName()) != null) {
 			Helper.setMeldung("plugin_NliDailyPress_successMessageSingleImport");			
@@ -195,7 +208,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 				if(newspaperData == null) {
 					throw new NullPointerException();
 				}
-				return new Newspaper(cmsId, newspaperData);
+				return new Newspaper(cmsId, mapNewspaperColumnsToFields(newspaperData));
 			} catch (NullPointerException e) {
 				log.debug("no newspaper found for " + this.singleCmsID);
 				return null;
@@ -205,6 +218,24 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			log.error("Not cmsID selected");
 			return null;
 		}
+	}
+
+	private Map<String, String> mapNewspaperColumnsToFields(Map<String, String> newspaperData) {
+		Map<String, String> fieldMap = new HashMap<>();
+		for (String column : newspaperData.keySet()) {
+			String field = getConfig().getString("newspaperDataMappings/mapping[column='"+column+"']/field");
+			fieldMap.put(field, newspaperData.get(column));
+		}
+		return fieldMap;
+	}
+	
+	private Map<String, String> mapIssueColumnsToFields(Map<String, String> newspaperData) {
+		Map<String, String> fieldMap = new HashMap<>();
+		for (String column : newspaperData.keySet()) {
+			String field = getConfig().getString("issueUploadMappings/mapping[column='"+column+"']/field");
+			fieldMap.put(field, newspaperData.get(column));
+		}
+		return fieldMap;
 	}
 
 	private NewspaperManager getNewspaperManager() {
@@ -401,7 +432,8 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		createProcessProperty("Newspaper", issue.getNewspaper().getTitle(), newProcess);
 		createProcessProperty("Issue number", issue.getIssueNumber() != null ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber()) : "-", newProcess);
 		createProcessProperty("Issue date", NewspaperIssue.dateFormat.format(issue.getIssueDate()), newProcess);
-		createProcessProperty("Issue commenet", issue.getIssueComment(), newProcess);
+		createProcessProperty("Issue comment", issue.getIssueComment(), newProcess);
+		createProcessProperty("Issue type", issue.getIssueType().name, newProcess);
 
 		try {
 			Fileformat ff = createFileformat(issue ,processTitle, getPrefs());
@@ -534,7 +566,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
 	private void setMetadata(Map<String, String> columnMap, String identifier, DocStruct ds, Prefs prefs) throws UGHException {
 		for (String column : columnMap.keySet()) {
-			String metadataName = getMetadataNameForColumn(column);
+			String metadataName = getMetadataNameForField(column);
 			if (metadataName != null) {
 				MetadataType mdType = prefs.getMetadataTypeByName(metadataName);
 				if (mdType != null) {
@@ -552,15 +584,14 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		}
 	}
 
-	protected String getMetadataNameForColumn(String column) {
-		return getConfig().getString("metadataMappings/mapping[column='" + column + "']/metadata");
+	protected String getMetadataNameForField(String column) {
+		return getConfig().getString("metadataMappings/mapping[field='" + column + "']/metadata");
 	}
 	
 	protected List<NewspaperIssue> createIssues(File excelFile) throws ConfigurationException, IOException {
 		NewspaperManager manager = new IssueUploadManager(excelFile, getConfig());
 		String cmsColumn = getConfig().getString("issueUploadMappings/cmsId", "cms");
 		String folderColumn = getConfig().getString("issueUploadMappings/uploadFolder", "code");
-		List<String> fields = getConfig().getList("issueUploadMappings/mapping/column");
 		
 		List<NewspaperIssue> issues = new ArrayList<>();
 		Iterator<String> rows = manager.getIdentifiers().iterator();
@@ -572,7 +603,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			String rowNumber = rows.next();
 			Map<String, String> rowData = manager.getRow(rowNumber);
 			try {
-				NewspaperIssue issue = createIssue(cmsColumn, fields, rowData);
+				NewspaperIssue issue = createIssue(cmsColumn, rowData);
 				String folderName = rowData.get(folderColumn);
 				addFiles(issue, folderName);
 				issues.add(issue);
@@ -628,15 +659,15 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	 * @param rowNumber
 	 * @param rowData
 	 */
-	private NewspaperIssue createIssue(String cmsColumn, List<String> fields, Map<String, String> rowData) {
+	private NewspaperIssue createIssue(String cmsColumn, Map<String, String> rowData) {
 		String cms = rowData.get(cmsColumn);
+		Map<String, String> fieldMap = mapIssueColumnsToFields(rowData);
 			NewspaperIssue issue = new NewspaperIssue(searchNewspaper(cms));
-			for (String field : fields) {
-				String value = rowData.get(field);
-				String fieldName = getConfig().getString("issueUploadMappings/mapping[column='"+field+"']/field");
-				if(value != null && fieldName != null) {
+			for(String field : fieldMap.keySet()) {
+				String value = fieldMap.get(field);
+				if(value != null && field != null) {
 					try {							
-						switch(fieldName) {
+						switch(field) {
 						case "issueDate":
 							issue.setIssueDate(ExcelDataReader.inputDateFormat.parse(value));
 							break;
@@ -650,7 +681,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 							issue.setIssueComment(value);
 							break;
 						default: 
-							log.warn("Unknown field " + fieldName);
+							log.warn("Unknown field " + field);
 						}
 						
 					} catch(ParseException | IllegalArgumentException e) {
