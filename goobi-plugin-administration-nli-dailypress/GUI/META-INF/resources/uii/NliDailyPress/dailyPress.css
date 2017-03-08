@@ -30,6 +30,7 @@ a.btn.padding-sides-more {
 }
 
 #newspaper_metadata .dl-horizontal dt{
+	font-weight: normal;
 	text-align: left;
 	width: 20%;
 }
@@ -157,7 +158,12 @@ a.btn.padding-sides-more {
 	color: red;
 }
 
-#issue_list .dl-horizontal dt{
+#issue_list .dl-horizontal {
+	margin-bottom: 0;
+}
+
+#issue_list .dl-horizontal dt {
+	font-weight: normal;
 	text-align: left;
 	width: 20%
 }

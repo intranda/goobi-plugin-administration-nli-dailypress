@@ -220,31 +220,31 @@
 								<!-- Issue list -->
 								<h:panelGroup id="issue_list">
 									<ui:repeat var="issue" varStatus="status" value="#{AdministrationForm.administrationPlugin.issueBatch}">
-										<h:panelGroup layout="block" styleClass="form-group" id="issue_metadata">
+										<h:panelGroup layout="block" styleClass="form-group border-bottom-light" id="issue_metadata">
 												<div class="col-sm-3 control-label">
 													<h:outputLabel value="#{msgs.plugin_NliDailyPress_record} #{status.index+1}" />
 												</div>
 												<div class="col-sm-9">
 													<dl class="dl-horizontal">
-														<dt>#{msgs.plugin_NliDailyPress_record_title}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_record_title}:</dt>
 														<dd>#{issue.newspaper.getValue("Title")}</dd>
 
-														<dt>#{msgs.plugin_NliDailyPress_record_publisher}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_record_publisher}:</dt>
 														<dd>#{issue.newspaper.getValue("Publisher")}</dd>
 														
-														<dt>#{msgs.plugin_NliDailyPress_record_language}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_record_language}:</dt>
 														<dd>#{issue.newspaper.getValue("Language")}</dd>
 													
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueDate}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueDate}:</dt>
 														<dd>#{issue.issueDate}</dd>
 														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueNumber}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueNumber}:</dt>
 														<dd>#{issue.issueNumber}</dd>
 														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueType}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueType}:</dt>
 														<dd>#{issue.issueType.name}</dd>
 														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueFileCount}</dt>
+														<dt>#{msgs.plugin_NliDailyPress_singleIssueFileCount}:</dt>
 														<dd>#{issue.files.size()}</dd>
 													</dl>
 												</div>
