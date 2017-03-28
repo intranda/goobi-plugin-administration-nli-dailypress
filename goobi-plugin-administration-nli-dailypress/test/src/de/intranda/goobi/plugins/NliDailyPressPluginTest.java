@@ -13,7 +13,7 @@ import org.junit.Test;
 public class NliDailyPressPluginTest {
 	
 	NliDailyPressPlugin plugin;
-	String configPath = "test/resources/plugin_NliDailyPressPlugin.xml";
+	String configPath = "plugin_NliDailyPressPlugin.xml";
 
 	@Before
 	public void setUp() throws Exception {
