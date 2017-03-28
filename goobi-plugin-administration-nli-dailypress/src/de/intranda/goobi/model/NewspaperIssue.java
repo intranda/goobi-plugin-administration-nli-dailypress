@@ -24,7 +24,7 @@ public class NewspaperIssue {
 	public static final DateFormat dateYearFormat = new SimpleDateFormat("yyyy");
 	public static final DateFormat dateMonthFormat = new SimpleDateFormat("MM");
 	public static final DateFormat dateDayFormat = new SimpleDateFormat("dd");
-	public static final NumberFormat issueNumberFormat = new DecimalFormat("0000");
+	public static final NumberFormat issueNumberFormat = new DecimalFormat("0");
 
 	
 	private Newspaper newspaper;
