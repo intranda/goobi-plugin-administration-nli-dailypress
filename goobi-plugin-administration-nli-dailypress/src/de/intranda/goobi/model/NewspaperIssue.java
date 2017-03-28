@@ -107,5 +107,9 @@ public class NewspaperIssue {
 			throw new IllegalArgumentException("Unknown issue type: " + name);
 		}
 	}
+
+	public boolean hasIssueNumber() {
+		return issueNumber != null && issueNumber != 0;
+	}
 		
 }

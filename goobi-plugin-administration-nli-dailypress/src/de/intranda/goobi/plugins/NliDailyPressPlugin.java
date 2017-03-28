@@ -187,7 +187,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	private String createProcessName(NewspaperIssue issue) {
 		System.out.println("Issue number  = " + issue.getIssueNumber());
 		String name = issue.getNewspaper().getCmsID() + "_"
-				+ (issue.getIssueNumber() != null ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber())
+				+ (issue.hasIssueNumber() ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber())
 						: "")
 				+ "_" + NewspaperIssue.dateYearFormat.format(issue.getIssueDate()) + "_ "
 				+ NewspaperIssue.dateMonthFormat.format(issue.getIssueDate()) + "_ "
