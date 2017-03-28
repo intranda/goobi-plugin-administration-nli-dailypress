@@ -74,7 +74,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	public static final NumberFormat filenameFormat = new DecimalFormat("0000");
 
 	private String singleCmsID;
-	private Integer singleIssueNumber;
+	private String singleIssueNumber;
 	private Date singleIssueDate;
 	private String singleIssueComment;
 	private String singleIssueType;
@@ -187,8 +187,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 	private String createProcessName(NewspaperIssue issue) {
 		System.out.println("Issue number  = " + issue.getIssueNumber());
 		String name = issue.getNewspaper().getCmsID() + "_"
-				+ (issue.hasIssueNumber() ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber())
-						: "")
+				+ (issue.hasIssueNumber() ? issue.getIssueNumber() : "")
 				+ "_" + NewspaperIssue.dateYearFormat.format(issue.getIssueDate()) + "_ "
 				+ NewspaperIssue.dateMonthFormat.format(issue.getIssueDate()) + "_ "
 				+ NewspaperIssue.dateDayFormat.format(issue.getIssueDate());
@@ -435,7 +434,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 		createProcessProperty("Newspaper", issue.getNewspaper().getTitle(), newProcess);
 		createProcessProperty("Publisher", issue.getNewspaper().getValue("Publisher"), newProcess);
 		createProcessProperty("Issue number",
-				issue.getIssueNumber() != null ? NewspaperIssue.issueNumberFormat.format(issue.getIssueNumber()) : "-",
+				issue.getIssueNumber() != null ? issue.getIssueNumber() : "-",
 				newProcess);
 		createProcessProperty("Issue date", NewspaperIssue.dateFormat.format(issue.getIssueDate()), newProcess);
 		createProcessProperty("Issue comment", issue.getIssueComment(), newProcess);
@@ -701,7 +700,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 						issue.setIssueDate(ExcelDataReader.inputDateFormat.parse(value));
 						break;
 					case "issueNumber":
-						issue.setIssueNumber(Integer.parseInt(value));
+						issue.setIssueNumber(value);
 						break;
 					case "issueType":
 						issue.setIssueType(IssueType.get(Integer.parseInt(value)));

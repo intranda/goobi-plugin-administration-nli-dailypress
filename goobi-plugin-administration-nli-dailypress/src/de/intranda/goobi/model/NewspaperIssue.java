@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.UploadedFile;
 
 import de.intranda.goobi.model.NewspaperIssue.IssueType;
@@ -24,11 +25,11 @@ public class NewspaperIssue {
 	public static final DateFormat dateYearFormat = new SimpleDateFormat("yyyy");
 	public static final DateFormat dateMonthFormat = new SimpleDateFormat("MM");
 	public static final DateFormat dateDayFormat = new SimpleDateFormat("dd");
-	public static final NumberFormat issueNumberFormat = new DecimalFormat("0");
+//	public static final NumberFormat issueNumberFormat = new DecimalFormat("0");
 
 	
 	private Newspaper newspaper;
-	private Integer issueNumber;
+	private String issueNumber;
 	private Date issueDate;
 	private String issueComment;
 	private IssueType issueType;
@@ -44,7 +45,7 @@ public class NewspaperIssue {
 	public Map<String, String> getMetadataMap() {
 		HashMap<String, String> map = new HashMap<>();
 		if(issueNumber != null) {			
-			map.put("issueNumber", issueNumberFormat.format(issueNumber));
+			map.put("issueNumber", issueNumber);
 		}
 		if(issueDate != null) {			
 			map.put("issueDate", dateFormat.format(issueDate));
@@ -109,7 +110,7 @@ public class NewspaperIssue {
 	}
 
 	public boolean hasIssueNumber() {
-		return issueNumber != null && issueNumber != 0;
+		return StringUtils.isNotBlank(issueNumber);
 	}
 		
 }
