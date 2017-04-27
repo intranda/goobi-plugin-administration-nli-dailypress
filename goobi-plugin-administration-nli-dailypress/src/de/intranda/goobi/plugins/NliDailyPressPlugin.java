@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -30,6 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
+import org.goobi.beans.Step;
 import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.interfaces.IAdministrationPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
@@ -37,7 +37,6 @@ import org.primefaces.event.FileUploadEvent;
 
 import de.intranda.goobi.input.ExcelDataReader;
 import de.intranda.goobi.input.PdfExtractor;
-import de.intranda.goobi.model.ExcelDataManager;
 import de.intranda.goobi.model.FileUpload;
 import de.intranda.goobi.model.IssueUploadManager;
 import de.intranda.goobi.model.Newspaper;
@@ -48,6 +47,7 @@ import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.config.ConfigurationHelper;
 import de.sub.goobi.helper.BeanHelper;
 import de.sub.goobi.helper.Helper;
+import de.sub.goobi.helper.HelperSchritte;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
@@ -459,13 +459,21 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 			Helper.setFehlerMeldung(e.toString());
 			return null;
 		}
+		
+		triggerNextStep(newProcess);
 
 		Helper.setMeldung("plugin_NliDailyPress_successMessageCreatedProcess " + processTitle);
 		return newProcess;
 
 	}
 
-	/**
+	private void triggerNextStep(Process process) {
+       Step currentStep = process.getAktuellerSchritt();
+       new HelperSchritte().CloseStepObjectAutomatic(currentStep);
+        
+    }
+
+    /**
 	 * @param files
 	 * @param newProcess
 	 * @throws IOException
