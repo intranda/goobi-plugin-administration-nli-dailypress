@@ -527,16 +527,16 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
             }
         }
 
-        // copy pdf to images folder is no images exist (needed for pdf creation
-        if ((!masterImagesDir.exists() || masterImagesDir.listFiles(getMediaFilter()).length == 0) && (pdfDir.exists() && pdfDir.listFiles(
-                getMediaFilter()).length > 0)) {
-            Files.createSymbolicLink(tifImagesDir.toPath(), pdfDir.toPath());
-        } else {
-            if (!masterImagesDir.exists()) {
-                masterImagesDir.mkdirs();
-            }
-            Files.createSymbolicLink(tifImagesDir.toPath(), masterImagesDir.toPath());
-        }
+//        // copy pdf to images folder is no images exist (needed for pdf creation
+//        if ((!masterImagesDir.exists() || masterImagesDir.listFiles(getMediaFilter()).length == 0) && (pdfDir.exists() && pdfDir.listFiles(
+//                getMediaFilter()).length > 0)) {
+//            Files.createSymbolicLink(tifImagesDir.toPath(), pdfDir.toPath());
+//        } else {
+//            if (!masterImagesDir.exists()) {
+//                masterImagesDir.mkdirs();
+//            }
+//            Files.createSymbolicLink(tifImagesDir.toPath(), masterImagesDir.toPath());
+//        }
 
         int numFiles = renameFiles(masterImagesDir, newProcess.getTitel());
         numFiles = Math.max(numFiles, renameFiles(pdfDir, newProcess.getTitel()));
