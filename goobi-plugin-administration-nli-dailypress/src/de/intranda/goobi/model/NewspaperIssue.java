@@ -33,6 +33,7 @@ public class NewspaperIssue {
 	private Date issueDate;
 	private String issueComment;
 	private IssueType issueType;
+	private String imageUploadFolderName;
 	private List<FileUpload> files = new ArrayList<>();
 	
 	public NewspaperIssue(Newspaper newspaper) {
@@ -112,5 +113,13 @@ public class NewspaperIssue {
 	public boolean hasIssueNumber() {
 		return StringUtils.isNotBlank(issueNumber);
 	}
+
+    public void setImageUploadFolderName(String folderName) {
+        this.imageUploadFolderName = folderName;
+    }
+    
+    public String getImageUploadFolderName() {
+        return this.imageUploadFolderName;
+    }
 		
 }

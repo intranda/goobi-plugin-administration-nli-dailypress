@@ -252,6 +252,25 @@
 									</ui:repeat>
 								</h:panelGroup>
 								
+								 <!-- Field for excel file upload -->
+			                    <div class="form-group">
+									<div id="image_upload_folder_label" class="col-sm-3 control-label">
+										<h:outputLabel for="image_upload_folder_display" value="#{msgs.plugin_NliDailyPress_imageUploadFolder}" />
+									</div>
+									<div class="col-sm-9 no-padding"  id="image_upload_folder_wrapper">
+										<div id="image_upload_folder_display" class="col-sm-12">										
+												<h:inputText styleClass="form-control" id="image_upload_folder_select" value="#{AdministrationForm.administrationPlugin.imageUploadFolder}">
+													<f:ajax event="change" render="@all"></f:ajax>
+												</h:inputText>
+<!-- 											<h:outputLabel  value="#{AdministrationForm.administrationPlugin.imageUploadFolder.absolutePath}"></h:outputLabel> -->
+										</div>
+										<div id="image_upload_folder_actions" class="col-sm-6">
+											<div class="col-sm-6">
+											</div>
+										</div>
+									</div>
+								</div>
+								
 								
 								<!-- Form action -->
 								<div class="form-actions">

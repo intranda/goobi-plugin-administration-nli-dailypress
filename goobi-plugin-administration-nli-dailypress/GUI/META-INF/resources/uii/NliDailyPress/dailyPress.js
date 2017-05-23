@@ -1,7 +1,7 @@
 
 $(document).ready(function() {
 	
-//	$('.form-control.date').datepicker({
+//	$('.hasDatepicker').datepicker({
 //		format: "yyyy/mm/dd"
 //	});
 	
