@@ -37,6 +37,7 @@ import org.primefaces.event.FileUploadEvent;
 
 import de.intranda.goobi.input.ExcelDataReader;
 import de.intranda.goobi.input.PdfExtractor;
+import de.intranda.goobi.input.PdfExtractorException;
 import de.intranda.goobi.model.FileUpload;
 import de.intranda.goobi.model.IssueUploadManager;
 import de.intranda.goobi.model.Newspaper;
@@ -476,7 +477,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         try {
             int numFiles = copyMediaFiles(issue.getFiles(), newProcess);
             createProcessProperty("Pages", Integer.toString(numFiles), newProcess);
-        } catch (IOException | InterruptedException | SwapException | DAOException e) {
+        } catch (IOException | InterruptedException | SwapException | DAOException | PdfExtractorException e) {
             ProcessManager.deleteProcess(newProcess);
             log.error(e);
             Helper.setFehlerMeldung(e.toString());
@@ -504,12 +505,13 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @throws SwapException
      * @throws DAOException
      * @return the number of pdf files or image files, whichever is larger
+     * @throws PdfExtractorException 
      */
-    private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException {
+    private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException, PdfExtractorException {
         File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
-        File tifImagesDir = new File(newProcess.getImagesTifDirectory(true));
         File pdfDir = new File(newProcess.getPdfDirectory());
         File ocrTextDir = new File(newProcess.getTxtDirectory());
+        int fileCounter = 1;
         for (FileUpload fileUpload : files) {
             if (fileUpload.isImage()) {
                 if (!masterImagesDir.isDirectory()) {
@@ -523,20 +525,9 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
                 if (!ocrTextDir.exists()) {
                     ocrTextDir.mkdirs();
                 }
-                new PdfExtractor().extractPdfs(fileUpload.getPath(), pdfDir, ocrTextDir);
+                fileCounter = new PdfExtractor().extractPdfs(fileUpload.getPath(), pdfDir, ocrTextDir, fileCounter);
             }
         }
-
-//        // copy pdf to images folder is no images exist (needed for pdf creation
-//        if ((!masterImagesDir.exists() || masterImagesDir.listFiles(getMediaFilter()).length == 0) && (pdfDir.exists() && pdfDir.listFiles(
-//                getMediaFilter()).length > 0)) {
-//            Files.createSymbolicLink(tifImagesDir.toPath(), pdfDir.toPath());
-//        } else {
-//            if (!masterImagesDir.exists()) {
-//                masterImagesDir.mkdirs();
-//            }
-//            Files.createSymbolicLink(tifImagesDir.toPath(), masterImagesDir.toPath());
-//        }
 
         int numFiles = renameFiles(masterImagesDir, newProcess.getTitel());
         numFiles = Math.max(numFiles, renameFiles(pdfDir, newProcess.getTitel()));

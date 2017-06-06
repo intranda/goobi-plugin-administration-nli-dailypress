@@ -54,50 +54,45 @@ public class PdfExtractor {
 	private int pdfPageCounter = 1;
 	private String encoding = "utf-8";
 
-	public boolean extractPdfs(File importFile, File outputPdfDir, File outputTextDir) {
+	public int extractPdfs(File importFile, File outputPdfDir, File outputTextDir, int startPageNumber) throws PdfExtractorException {
 
-		boolean success = true;
-		
 		ArrayList<File> pdfOutputFiles = new ArrayList<File>();
+		try {
 		if (!splitPdfFile(importFile, outputPdfDir, pdfOutputFiles)) {
-			return false;
+			throw new PdfExtractorException("Failed to split pdf file");
 		}
 
 		logger.info("Moving " + pdfOutputFiles.size() + " pdf files and extracting plain text files");
 		for (File file : pdfOutputFiles) {
+		    startPageNumber++;
 			try {
 				if (outputTextDir != null) {
 					// creating plain text files
-					if (!writeFullText(file, outputTextDir)) {
-						logger.error("Error creating plaintext file from pdf. ");
-						success = false;
-						break;
+					if (!writeFullText(file, outputTextDir, startPageNumber)) {
+						throw new PdfExtractorException("Error creating plaintext file from pdf. ");
 					}
 				}
 				// renaming pdf files goobi format
-				File destFile = new File(outputPdfDir, getNewFilename(file.getName()));
+				File destFile = new File(outputPdfDir, getNewFilename(startPageNumber, file.getName()));
 				logger.debug("Renaming " + file.getAbsolutePath() + " to " + destFile.getAbsolutePath());
 				file.renameTo(destFile);
 			} catch (IOException e) {
-				logger.error("Error creating plaintext file from pdf: " + e.toString());
-				success = false;
-				break;
+				throw new PdfExtractorException("Error creating plaintext file from pdf: " + e.toString());
 			}
 		}
-
-		if (!success) {
-			if (pdfOutputFiles != null) {
-				for (File file : pdfOutputFiles) {
-					if (file != null && file.isFile()) {
-						file.delete();
-					}
-				}
-			}
-			return false;
+		} catch(PdfExtractorException e) {
+		    if (pdfOutputFiles != null) {
+                for (File file : pdfOutputFiles) {
+                    if (file != null && file.isFile()) {
+                        file.delete();
+                    }
+                }
+            }
+		    throw e;
 		}
 
 		logger.info("Done with pdf files");
-		return true;
+		return startPageNumber;
 	}
 
 	private boolean splitPdfFile(File file, File destFolder, List<File> destFileList) {
@@ -149,7 +144,7 @@ public class PdfExtractor {
 		return true;
 	}
 
-	private boolean writeFullText(File docFile, File textDir) throws IOException {
+	private boolean writeFullText(File docFile, File textDir, int pageCounter) throws IOException {
 		PDDocument doc = PDDocument.load(docFile);
 
 		if (doc == null) {
@@ -168,7 +163,7 @@ public class PdfExtractor {
 			for (; i <= doc.getNumberOfPages(); ++i) {
 				stripper.setStartPage(i);
 				stripper.setEndPage(i);
-				String filename = getNewFilename(docFile.getName());
+				String filename = getNewFilename(pageCounter, docFile.getName());
 				filename = filename.substring(0, filename.lastIndexOf("."));
 				if (doc.getNumberOfPages() > 1) {
 					filename += ("-" + String.format("%03d", i));
@@ -190,7 +185,7 @@ public class PdfExtractor {
 		return true;
 	}
 
-	private String getNewFilename(String origFilename) {
+	private String getNewFilename(int counter, String origFilename) {
 		String[] splitDot = origFilename.split("\\.");
 		String suffix = null;
 		if (splitDot.length >= 2) {
@@ -198,11 +193,11 @@ public class PdfExtractor {
 		}
 		if (splitDot.length >= 1) {
 			String nameBase = splitDot[0];
-			String[] splitUnderscore = nameBase.split("_");
-			String numberString = splitUnderscore[splitUnderscore.length - 1].replaceAll("\\D", "");
+//			String[] splitUnderscore = nameBase.split("_");
+//			String numberString = splitUnderscore[splitUnderscore.length - 1].replaceAll("\\D", "");
 			try {
-				int number = Integer.valueOf(numberString);
-				String newFilename = filenameFormat.format(number);
+//				int number = Integer.valueOf(numberString);
+				String newFilename = filenameFormat.format(counter);
 				if (suffix != null) {
 					newFilename += ("." + suffix.toLowerCase());
 				}
