@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -21,6 +22,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelDataReader {
 	
+    public static final Logger logger = Logger.getLogger(ExcelDataReader.class);
+    
 	public static final DateFormat inputDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
 	
@@ -71,7 +74,8 @@ public class ExcelDataReader {
 	 * @throws IOException
 	 */
 	public Map<String, Map<String, String>> read(File importFile, Integer identifierColumn, Integer identifierRow) throws IOException {
-		InputStream myxls = new FileInputStream(importFile);
+		logger.trace("Reading excel file " + importFile);
+	    InputStream myxls = new FileInputStream(importFile);
 		Sheet sheet = null;
         if (importFile.getName().toString().endsWith(".xlsx")) {
             XSSFWorkbook wb = new XSSFWorkbook(myxls);
@@ -81,13 +85,14 @@ public class ExcelDataReader {
             sheet = wb.getSheetAt(0); // first sheet
         }
         if (sheet != null) {
-
         	int numRows = sheet.getLastRowNum();
+        	logger.trace("Reading excel sheet with " + numRows + " rows");
         	Map<String, Map<String, String>> tableMap = new HashMap<>();
             for (int j = 0; j <= numRows; j++) {
                 // loop over all cells
                 Row row = sheet.getRow(j);
                 String key = Integer.toString(j+1);
+                logger.trace("Reading row " + key);
                 if(identifierColumn != null) {
                 	Cell identifierCell = row.getCell(identifierColumn-1);
                 	if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_NUMERIC) { 
@@ -101,9 +106,12 @@ public class ExcelDataReader {
                 		key = identifierCell.getStringCellValue();
                 	}
                 }
+                logger.trace("Row key is " + key);
                 if (row != null) {
                     Map<Integer, String> rowMap = getRowAsIntMap(row);
+                    logger.trace("row map is " + rowMap);
                     Map<String, String> rowIdentifierMap = convertToIdentiferMap(rowMap, identifierRow != null ? sheet.getRow(identifierRow-1): null);
+                    logger.trace("row identifier map is " + rowIdentifierMap);
                     tableMap.put(key, rowIdentifierMap);
                 }
             }

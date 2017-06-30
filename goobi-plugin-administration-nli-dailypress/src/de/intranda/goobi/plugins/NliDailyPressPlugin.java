@@ -27,6 +27,7 @@ import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 import org.goobi.beans.Step;
@@ -69,6 +70,8 @@ import ugh.fileformats.mets.MetsMods;
 @PluginImplementation
 @Log4j
 public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin {
+
+    private static final Logger logger = Logger.getLogger(NliDailyPressPlugin.class);
 
     private static final String PLUGIN_NAME = "NliDailyPress";
 
@@ -279,7 +282,6 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
             }
         }
     }
-
 
     private XMLConfiguration getConfig() {
         if (this.config == null) {
@@ -505,9 +507,10 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @throws SwapException
      * @throws DAOException
      * @return the number of pdf files or image files, whichever is larger
-     * @throws PdfExtractorException 
+     * @throws PdfExtractorException
      */
-    private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException, PdfExtractorException {
+    private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException,
+            PdfExtractorException {
         File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
         File pdfDir = new File(newProcess.getPdfDirectory());
         File ocrTextDir = new File(newProcess.getTxtDirectory());
@@ -643,20 +646,23 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         List<NewspaperIssue> issues = new ArrayList<>();
         Iterator<String> rows = manager.getIdentifiers().iterator();
         // skip first row
-        if (rows.hasNext()) {
-            rows.next();
-        }
         while (rows.hasNext()) {
             String rowNumber = rows.next();
+            logger.trace("Creating issue from row " + rowNumber);
             Map<String, String> rowData = manager.getRow(rowNumber);
-            try {
-                NewspaperIssue issue = createIssue(cmsColumn, rowData);
-                String folderName = rowData.get(folderColumn);
-                issue.setImageUploadFolderName(folderName);
-                addFiles(issue);
-                issues.add(issue);
-            } catch (NullPointerException e) {
-                log.warn("No newspaper with cmsId '" + rowData.get(cmsColumn) + "' registered");
+            logger.trace("row data is " + rowData);
+            if (rowData.get(cmsColumn).equals(cmsColumn)) {
+                logger.trace("Row is identifier row. Ignore");
+            } else {
+                try {
+                    NewspaperIssue issue = createIssue(cmsColumn, rowData);
+                    String folderName = rowData.get(folderColumn);
+                    issue.setImageUploadFolderName(folderName);
+                    addFiles(issue);
+                    issues.add(issue);
+                } catch (NullPointerException e) {
+                    log.warn("No newspaper with cmsId '" + rowData.get(cmsColumn) + "' registered");
+                }
             }
 
         }
@@ -710,7 +716,9 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      */
     private NewspaperIssue createIssue(String cmsColumn, Map<String, String> rowData) {
         String cms = rowData.get(cmsColumn);
+        logger.trace("cms id from column " + cmsColumn + " is " + cms);
         Map<String, String> fieldMap = mapIssueColumnsToFields(rowData);
+        logger.trace("field map is " + fieldMap);
         NewspaperIssue issue = new NewspaperIssue(searchNewspaper(cms));
         for (String field : fieldMap.keySet()) {
             String value = fieldMap.get(field);
