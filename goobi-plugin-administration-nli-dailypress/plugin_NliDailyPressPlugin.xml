@@ -2,6 +2,10 @@
 <config_plugin>
 	<workflow>
 		<name>DailyPress</name>
+		<alterWorkflow>
+			<issueType>Printed Issue</issueType>
+			<deleteStep>PDF creation</deleteStep>
+		</alterWorkflow>
 	</workflow>
 	<ruleset>
 		<newspaperType>Newspaper</newspaperType>

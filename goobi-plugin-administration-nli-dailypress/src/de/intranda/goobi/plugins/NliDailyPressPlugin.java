@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.io.FileUtils;
@@ -35,6 +37,7 @@ import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.interfaces.IAdministrationPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.ScheduleEntryResizeEvent;
 
 import de.intranda.goobi.input.ExcelDataReader;
 import de.intranda.goobi.input.PdfExtractor;
@@ -448,6 +451,12 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         bhelp.WerkstueckeKopieren(template, newProcess);
         bhelp.EigenschaftenKopieren(template, newProcess);
 
+        //delete PDF creation step if not required
+        List<String> stepsToDelete = getStepsToDelete(issue);
+        for (String stepToDelete : stepsToDelete) {            
+            deleteStep(newProcess, stepToDelete);
+        }
+        
         try {
             ProcessManager.saveProcess(newProcess);
         } catch (DAOException e) {
@@ -491,6 +500,38 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         Helper.setMeldung("plugin_NliDailyPress_successMessageCreatedProcess " + processTitle);
         return newProcess;
 
+    }
+
+    private List<String> getStepsToDelete(NewspaperIssue issue) {
+        List<String> steps = new ArrayList<>();
+        List<SubnodeConfiguration> subConfigs = config.configurationsAt("workflow/alterWorkflow");
+        for (SubnodeConfiguration alterWorkflow : subConfigs) {
+            String issueType = alterWorkflow.getString("issueType", null);
+            if(StringUtils.isNotBlank(issueType) && issue.getIssueType().name.equalsIgnoreCase(issueType)) {
+                String stepToDelete = alterWorkflow.getString("deleteStep", null);
+                steps.add(stepToDelete);
+            }
+        }
+        return steps;
+    }
+
+    /**
+     * @param newProcess
+     * @param stepToDelete
+     */
+    private void deleteStep(Process newProcess, String stepToDelete) {
+        if(StringUtils.isNotBlank(stepToDelete)) {   
+            List<Step> steps = newProcess.getSchritte();
+            Iterator<Step> iter = steps.iterator();
+            while(iter.hasNext()) {
+                Step step = iter.next();
+                if(stepToDelete.equalsIgnoreCase(step.getTitel())) {
+                    logger.debug("Deleting step " + step.getTitel());
+                    iter.remove();
+                }
+            }
+            newProcess.setSchritte(steps);
+        }
     }
 
     private void triggerNextStep(Process process) {
