@@ -11,11 +11,6 @@
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-io-2.5.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-contrib-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-ooxml-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-ooxml-schemas-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-scratchpad-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/chronicle-3.2.1.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/chronicle-logger-1.0.1.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/chronicle-logger-log4j-1-1.0.1.jar"/>
@@ -30,7 +25,12 @@
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/iText-2.1.5.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/itext-rtf-2.1.5.jar"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/pdfbox-1.7.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-7-oracle"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/lombok.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-3.16.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-excelant-3.16.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-ooxml-3.16.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-ooxml-schemas-3.16.jar"/>
+	<classpathentry kind="lib" path="/Goobi/webapp/WEB-INF/lib/poi-scratchpad-3.16.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
