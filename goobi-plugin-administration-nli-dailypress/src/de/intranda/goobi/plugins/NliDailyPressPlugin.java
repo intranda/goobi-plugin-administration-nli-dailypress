@@ -6,7 +6,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
@@ -37,7 +35,6 @@ import org.goobi.production.enums.PluginType;
 import org.goobi.production.plugin.interfaces.IAdministrationPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.ScheduleEntryResizeEvent;
 
 import de.intranda.goobi.input.ExcelDataReader;
 import de.intranda.goobi.input.PdfExtractor;
@@ -76,7 +73,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
     private static final Logger logger = Logger.getLogger(NliDailyPressPlugin.class);
 
-    private static final String PLUGIN_NAME = "NliDailyPress";
+    private static final String PLUGIN_NAME = "intranda_admin_nli_dailypress";
 
     public static final NumberFormat filenameFormat = new DecimalFormat("0000");
 
@@ -288,7 +285,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
     private XMLConfiguration getConfig() {
         if (this.config == null) {
-            this.config = ConfigPlugins.getPluginConfig(this);
+            this.config = ConfigPlugins.getPluginConfig(PLUGIN_NAME);
             this.config.setExpressionEngine(new XPathExpressionEngine());
         }
         return this.config;

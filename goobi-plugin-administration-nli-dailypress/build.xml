@@ -179,7 +179,7 @@
 
 	<!-- Run all targets in appropiate order for clean compile-->
 	<target name="dist" depends="clean, createDirs, git.revision, jar.runnable" description="Creating everything for Jenkins." >
-            <copy tofile="${dir.deploy}/plugin_NliDailyPressPlugin.xml" file="plugin_NliDailyPressPlugin.xml" />
+            <copy tofile="${dir.deploy}/plugin_intranda_admin_nli_dailypress.xml" file="plugin_intranda_admin_nli_dailypress.xml" />
 	</target>
 
 
