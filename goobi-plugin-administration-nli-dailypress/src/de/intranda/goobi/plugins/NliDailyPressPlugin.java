@@ -73,7 +73,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
     private static final Logger logger = Logger.getLogger(NliDailyPressPlugin.class);
 
-    private static final String PLUGIN_NAME = "intranda_admin_nli_dailypress";
+    private static final String PLUGIN_NAME = "intranda_administration_nli_dailypress";
 
     public static final NumberFormat filenameFormat = new DecimalFormat("0000");
 
