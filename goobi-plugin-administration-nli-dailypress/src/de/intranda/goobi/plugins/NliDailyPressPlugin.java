@@ -550,8 +550,8 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
     private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException,
             PdfExtractorException {
         File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
-        File pdfDir = new File(newProcess.getPdfDirectory());
-        File ocrTextDir = new File(newProcess.getTxtDirectory());
+        File pdfDir = new File(newProcess.getOcrPdfDirectory());
+        File ocrTextDir = new File(newProcess.getOcrTxtDirectory());
         int fileCounter = 1;
         for (FileUpload fileUpload : files) {
             if (fileUpload.isImage()) {
