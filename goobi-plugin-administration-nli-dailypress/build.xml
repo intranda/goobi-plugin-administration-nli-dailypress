@@ -1,0 +1,9 @@
+<project name="goobi-plugin-administration-dailypress" default="devbuild">
+	<target name="devbuild">
+		<exec executable="mvn">
+			<arg value="package"/>
+		</exec>
+		<copy file="module-gui/target/plugin_intranda_administration_nli_dailypress-GUI.jar" todir="/opt/digiverso/goobi/plugins/GUI/"/>
+		<copy file="module-main/target/plugin_intranda_administration_nli_dailypress.jar" todir="/opt/digiverso/goobi/plugins/administration/"/>
+	</target>
+</project>
