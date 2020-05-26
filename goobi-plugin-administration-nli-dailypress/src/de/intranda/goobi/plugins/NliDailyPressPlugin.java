@@ -36,9 +36,10 @@ import org.goobi.production.plugin.interfaces.IAdministrationPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.primefaces.event.FileUploadEvent;
 
+import de.intranda.digiverso.pdf.PDFConverter;
+import de.intranda.digiverso.pdf.exception.PDFReadException;
+import de.intranda.digiverso.pdf.exception.PDFWriteException;
 import de.intranda.goobi.input.ExcelDataReader;
-import de.intranda.goobi.input.PdfExtractor;
-import de.intranda.goobi.input.PdfExtractorException;
 import de.intranda.goobi.model.FileUpload;
 import de.intranda.goobi.model.IssueUploadManager;
 import de.intranda.goobi.model.Newspaper;
@@ -485,7 +486,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         try {
             int numFiles = copyMediaFiles(issue.getFiles(), newProcess);
             createProcessProperty("Pages", Integer.toString(numFiles), newProcess);
-        } catch (IOException | InterruptedException | SwapException | DAOException | PdfExtractorException e) {
+        } catch (IOException | InterruptedException | SwapException | DAOException  | PDFWriteException | PDFReadException e) {
             ProcessManager.deleteProcess(newProcess);
             log.error(e);
             Helper.setFehlerMeldung(e.toString());
@@ -546,12 +547,15 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @throws DAOException
      * @return the number of pdf files or image files, whichever is larger
      * @throws PdfExtractorException
+     * @throws PDFReadException 
+     * @throws PDFWriteException 
      */
     private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException,
-            PdfExtractorException {
+             PDFWriteException, PDFReadException {
         File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
         File pdfDir = new File(newProcess.getOcrPdfDirectory());
         File ocrTextDir = new File(newProcess.getOcrTxtDirectory());
+        File ocrAltoDir = new File(newProcess.getOcrAltoDirectory());
         int fileCounter = 1;
         for (FileUpload fileUpload : files) {
             if (fileUpload.isImage()) {
@@ -566,7 +570,14 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
                 if (!ocrTextDir.exists()) {
                     ocrTextDir.mkdirs();
                 }
-                fileCounter = new PdfExtractor().extractPdfs(fileUpload.getPath(), pdfDir, ocrTextDir, fileCounter);
+                List<File> singlePdfFiles = PDFConverter.writeSinglePagePdfs(fileUpload.getPath(), pdfDir, fileCounter);
+               
+                for(File pdfFile : singlePdfFiles) {
+                    PDFConverter.writeAltoFile(pdfFile, ocrAltoDir, null, false);
+                    PDFConverter.writeFullText(pdfFile, ocrTextDir, "utf-8", fileCounter);
+                    PDFConverter.writeImages(pdfFile, masterImagesDir, fileCounter, 300, "tif");
+                    fileCounter++;
+                };
             }
         }
 
