@@ -22,7 +22,7 @@ pipeline {
 
     stage('build') {
       steps {
-        sh 'mvn -f goobi-plugin-administration-nli-dailypress/pom.xml install'
+        sh 'mvn -f goobi-plugin-administration-nli-dailypress/pom.xml clean package'
         recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }
