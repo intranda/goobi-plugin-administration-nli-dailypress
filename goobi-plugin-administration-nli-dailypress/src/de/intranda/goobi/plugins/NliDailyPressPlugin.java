@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.io.FileUtils;
@@ -451,10 +451,10 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
         //delete PDF creation step if not required
         List<String> stepsToDelete = getStepsToDelete(issue);
-        for (String stepToDelete : stepsToDelete) {            
+        for (String stepToDelete : stepsToDelete) {
             deleteStep(newProcess, stepToDelete);
         }
-        
+
         try {
             ProcessManager.saveProcess(newProcess);
         } catch (DAOException e) {
@@ -502,8 +502,8 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
     private List<String> getStepsToDelete(NewspaperIssue issue) {
         List<String> steps = new ArrayList<>();
-        List<SubnodeConfiguration> subConfigs = config.configurationsAt("workflow/alterWorkflow");
-        for (SubnodeConfiguration alterWorkflow : subConfigs) {
+        List<HierarchicalConfiguration> subConfigs =  config.configurationsAt("workflow/alterWorkflow");
+        for (HierarchicalConfiguration alterWorkflow : subConfigs) {
             String issueType = alterWorkflow.getString("issueType", null);
             if(StringUtils.isNotBlank(issueType) && issue.getIssueType().name.equalsIgnoreCase(issueType)) {
                 String stepToDelete = alterWorkflow.getString("deleteStep", null);
@@ -518,7 +518,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @param stepToDelete
      */
     private void deleteStep(Process newProcess, String stepToDelete) {
-        if(StringUtils.isNotBlank(stepToDelete)) {   
+        if(StringUtils.isNotBlank(stepToDelete)) {
             List<Step> steps = newProcess.getSchritte();
             Iterator<Step> iter = steps.iterator();
             while(iter.hasNext()) {
@@ -547,11 +547,11 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @throws DAOException
      * @return the number of pdf files or image files, whichever is larger
      * @throws PdfExtractorException
-     * @throws PDFReadException 
-     * @throws PDFWriteException 
+     * @throws PDFReadException
+     * @throws PDFWriteException
      */
     private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException,
-             PDFWriteException, PDFReadException {
+    PDFWriteException, PDFReadException {
         File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
         File pdfDir = new File(newProcess.getOcrPdfDirectory());
         File ocrTextDir = new File(newProcess.getOcrTxtDirectory());
@@ -571,7 +571,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
                     ocrTextDir.mkdirs();
                 }
                 List<File> singlePdfFiles = PDFConverter.writeSinglePagePdfs(fileUpload.getPath(), pdfDir, fileCounter);
-               
+
                 for(File pdfFile : singlePdfFiles) {
                     PDFConverter.writeAltoFile(pdfFile, ocrAltoDir, null, false);
                     PDFConverter.writeFullText(pdfFile, ocrTextDir, "utf-8", fileCounter);
@@ -733,7 +733,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
     }
 
     private List<FileUpload> getFileUploads(File mediaFolder) {
-        List<FileUpload> files = new ArrayList<FileUpload>();
+        List<FileUpload> files = new ArrayList<>();
         if (mediaFolder != null) {
             for (File file : mediaFolder.listFiles(getMediaFilter())) {
                 FileUpload upload = new FileUpload();

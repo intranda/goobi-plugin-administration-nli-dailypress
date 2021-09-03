@@ -16,27 +16,29 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelDataReader {
-	
-    public static final Logger logger = Logger.getLogger(ExcelDataReader.class);
-    
-	public static final DateFormat inputDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
-	
-	/**
-	 * @param importFile
-	 * @return a map of row numbers to a map of column numbers to cell content. 
-	 * To Access row x and column y one needs to call map.get(x).get(y)
-	 * Both x and y are 1 based
-	 * @throws IOException
-	 */
-	public Map<Integer, Map<Integer, String>> read(File importFile) throws IOException {
-		InputStream myxls = new FileInputStream(importFile);
-		Sheet sheet = null;
+    public static final Logger logger = Logger.getLogger(ExcelDataReader.class);
+
+    public static final DateFormat inputDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+
+    /**
+     * @param importFile
+     * @return a map of row numbers to a map of column numbers to cell content.
+     * To Access row x and column y one needs to call map.get(x).get(y)
+     * Both x and y are 1 based
+     * @throws IOException
+     */
+    public Map<Integer, Map<Integer, String>> read(File importFile) throws IOException {
+        InputStream myxls = new FileInputStream(importFile);
+        Sheet sheet = null;
         if (importFile.getName().toString().endsWith(".xlsx")) {
             XSSFWorkbook wb = new XSSFWorkbook(myxls);
             sheet = wb.getSheetAt(0); // first sheet
@@ -46,8 +48,8 @@ public class ExcelDataReader {
         }
         if (sheet != null) {
 
-        	int numRows = sheet.getLastRowNum();
-        	Map<Integer, Map<Integer, String>> tableMap = new HashMap<>();
+            int numRows = sheet.getLastRowNum();
+            Map<Integer, Map<Integer, String>> tableMap = new HashMap<>();
             for (int j = 0; j <= numRows; j++) {
                 // loop over all cells
                 Row row = sheet.getRow(j);
@@ -59,24 +61,24 @@ public class ExcelDataReader {
             }
             return tableMap;
         } else {
-        	throw new IOException("Unable to extract sheet from " + importFile);
+            throw new IOException("Unable to extract sheet from " + importFile);
         }
-		
-	}
-	
-	/**
-	 * @param importFile
-	 * @param identifierColumn may be null. If not, and if its content is a number, 
-	 * its content is used as row key instead of the row number
-	 * @return a map of row numbers to a map of column numbers to cell content. 
-	 * To Access row x and column y one needs to call map.get(x).get(y)
-	 * Both x and y are 1 based (unless identifierColumn is used
-	 * @throws IOException
-	 */
-	public Map<String, Map<String, String>> read(File importFile, Integer identifierColumn, Integer identifierRow) throws IOException {
-		logger.trace("Reading excel file " + importFile);
-	    InputStream myxls = new FileInputStream(importFile);
-		Sheet sheet = null;
+
+    }
+
+    /**
+     * @param importFile
+     * @param identifierColumn may be null. If not, and if its content is a number,
+     * its content is used as row key instead of the row number
+     * @return a map of row numbers to a map of column numbers to cell content.
+     * To Access row x and column y one needs to call map.get(x).get(y)
+     * Both x and y are 1 based (unless identifierColumn is used
+     * @throws IOException
+     */
+    public Map<String, Map<String, String>> read(File importFile, Integer identifierColumn, Integer identifierRow) throws IOException {
+        logger.trace("Reading excel file " + importFile);
+        InputStream myxls = new FileInputStream(importFile);
+        Sheet sheet = null;
         if (importFile.getName().toString().endsWith(".xlsx")) {
             XSSFWorkbook wb = new XSSFWorkbook(myxls);
             sheet = wb.getSheetAt(0); // first sheet
@@ -85,26 +87,26 @@ public class ExcelDataReader {
             sheet = wb.getSheetAt(0); // first sheet
         }
         if (sheet != null) {
-        	int numRows = sheet.getLastRowNum();
-        	logger.trace("Reading excel sheet with " + numRows + " rows");
-        	Map<String, Map<String, String>> tableMap = new HashMap<>();
+            int numRows = sheet.getLastRowNum();
+            logger.trace("Reading excel sheet with " + numRows + " rows");
+            Map<String, Map<String, String>> tableMap = new HashMap<>();
             for (int j = 0; j <= numRows; j++) {
                 // loop over all cells
                 Row row = sheet.getRow(j);
                 String key = Integer.toString(j+1);
                 logger.trace("Reading row " + key);
                 if(identifierColumn != null) {
-                	Cell identifierCell = row.getCell(identifierColumn-1);
-                	if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_NUMERIC) { 
-                		if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
-	                		Date date = identifierCell.getDateCellValue();
-	                		key = inputDateFormat.format(date);
-                		} else {                			
-                			key = Integer.toString((int)identifierCell.getNumericCellValue());
-                		}
-                	} else if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_STRING) {
-                		key = identifierCell.getStringCellValue();
-                	}
+                    Cell identifierCell = row.getCell(identifierColumn-1);
+                    if(identifierCell != null && identifierCell.getCellType() == CellType.NUMERIC) {
+                        if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
+                            Date date = identifierCell.getDateCellValue();
+                            key = inputDateFormat.format(date);
+                        } else {
+                            key = Integer.toString((int)identifierCell.getNumericCellValue());
+                        }
+                    } else if(identifierCell != null && identifierCell.getCellType() == CellType.STRING) {
+                        key = identifierCell.getStringCellValue();
+                    }
                 }
                 logger.trace("Row key is " + key);
                 if (row != null) {
@@ -117,54 +119,54 @@ public class ExcelDataReader {
             }
             return tableMap;
         } else {
-        	throw new IOException("Unable to extract sheet from " + importFile);
+            throw new IOException("Unable to extract sheet from " + importFile);
         }
-		
-	}
 
-	
-	private Map<String, String> convertToIdentiferMap(Map<Integer, String> rowMap, Row identifierRow) {
-		Map<String, String> idMap = new HashMap<>();
-		for (Integer intKey : rowMap.keySet()) {
-			String key = Integer.toString(intKey);
+    }
+
+
+    private Map<String, String> convertToIdentiferMap(Map<Integer, String> rowMap, Row identifierRow) {
+        Map<String, String> idMap = new HashMap<>();
+        for (Integer intKey : rowMap.keySet()) {
+            String key = Integer.toString(intKey);
             if(identifierRow != null && identifierRow.getCell(intKey-1) != null) {
-            	Cell identifierCell = identifierRow.getCell(intKey-1);
-            	if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {                		
-            		if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
-                		Date date = identifierCell.getDateCellValue();
-                		key = inputDateFormat.format(date);
-            		} else {                			
-            			key = Integer.toString((int)identifierCell.getNumericCellValue());
-            		}
-            	} else if(identifierCell != null && identifierCell.getCellType() == Cell.CELL_TYPE_STRING) {
-            		key = identifierCell.getStringCellValue();
-            	}
+                Cell identifierCell = identifierRow.getCell(intKey-1);
+                if(identifierCell != null && identifierCell.getCellType() == CellType.NUMERIC) {
+                    if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
+                        Date date = identifierCell.getDateCellValue();
+                        key = inputDateFormat.format(date);
+                    } else {
+                        key = Integer.toString((int)identifierCell.getNumericCellValue());
+                    }
+                } else if(identifierCell != null && identifierCell.getCellType() == CellType.STRING) {
+                    key = identifierCell.getStringCellValue();
+                }
             }
             idMap.put(key, rowMap.get(intKey));
-		}
-		return idMap;
-	}
+        }
+        return idMap;
+    }
 
-	private Map<Integer, String> getRowAsIntMap(Row row) {
+    private Map<Integer, String> getRowAsIntMap(Row row) {
         Map<Integer, String> map = new LinkedHashMap<>();
         for (Iterator<Cell> iterator = row.cellIterator(); iterator.hasNext();) {
             Cell cell = iterator.next();
             int columnIndex = cell.getColumnIndex();
             String cellContent = null;
             switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_NUMERIC:
-                	if(HSSFDateUtil.isCellDateFormatted(cell)) {
-                		Date date = cell.getDateCellValue();
-                		cellContent = inputDateFormat.format(date);
-                	} else {                		
-                		Double d = cell.getNumericCellValue();
-                		cellContent = getAsIntOrDouble(d);
-                	}
+                case NUMERIC:
+                    if(DateUtil.isCellDateFormatted(cell)) {
+                        Date date = cell.getDateCellValue();
+                        cellContent = inputDateFormat.format(date);
+                    } else {
+                        Double d = cell.getNumericCellValue();
+                        cellContent = getAsIntOrDouble(d);
+                    }
                     break;
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     cellContent = cell.getStringCellValue();
                     break;
-                case Cell.CELL_TYPE_BLANK:
+                case BLANK:
                     break;
                 default:
                     throw new IllegalArgumentException("Unexpected cell value at cell " + cell);
@@ -175,8 +177,8 @@ public class ExcelDataReader {
         }
         return map;
     }
-	
-	public static String getAsIntOrDouble(Double d) {
+
+    public static String getAsIntOrDouble(Double d) {
         String cellContent;
         int i = d.intValue();
         if (d == i) {
