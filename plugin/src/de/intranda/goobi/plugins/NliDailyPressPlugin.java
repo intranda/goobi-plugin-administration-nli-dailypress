@@ -575,7 +575,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
                 for(File pdfFile : singlePdfFiles) {
                     PDFConverter.writeAltoFile(pdfFile, ocrAltoDir, null, false);
                     PDFConverter.writeFullText(pdfFile, ocrTextDir, "utf-8", fileCounter);
-                    PDFConverter.writeImages(pdfFile, masterImagesDir, fileCounter, 300, "tif");
+                    PDFConverter.writeImages(pdfFile, masterImagesDir, fileCounter, 300, "tif", "ghostscript");
                     fileCounter++;
                 };
             }
