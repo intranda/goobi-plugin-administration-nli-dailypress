@@ -326,7 +326,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
     public void handleFileUpload(FileUploadEvent event) {
         FileUpload upload;
         try {
-            upload = copyFile(event.getFile().getFileName(), event.getFile().getInputstream());
+            upload = copyFile(event.getFile().getFileName(), event.getFile().getInputStream());
 
         } catch (IOException e) {
             log.error(e);
@@ -342,7 +342,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         resetIssueBatch();
         FileUpload upload;
         try {
-            upload = copyFile(event.getFile().getFileName(), event.getFile().getInputstream());
+            upload = copyFile(event.getFile().getFileName(), event.getFile().getInputStream());
 
         } catch (IOException e) {
             log.error(e);

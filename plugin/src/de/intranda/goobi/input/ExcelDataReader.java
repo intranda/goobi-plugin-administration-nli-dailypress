@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -98,7 +97,7 @@ public class ExcelDataReader {
                 if(identifierColumn != null) {
                     Cell identifierCell = row.getCell(identifierColumn-1);
                     if(identifierCell != null && identifierCell.getCellType() == CellType.NUMERIC) {
-                        if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
+                        if(DateUtil.isCellDateFormatted(identifierCell)) {
                             Date date = identifierCell.getDateCellValue();
                             key = inputDateFormat.format(date);
                         } else {
@@ -132,7 +131,7 @@ public class ExcelDataReader {
             if(identifierRow != null && identifierRow.getCell(intKey-1) != null) {
                 Cell identifierCell = identifierRow.getCell(intKey-1);
                 if(identifierCell != null && identifierCell.getCellType() == CellType.NUMERIC) {
-                    if(HSSFDateUtil.isCellDateFormatted(identifierCell)) {
+                    if(DateUtil.isCellDateFormatted(identifierCell)) {
                         Date date = identifierCell.getDateCellValue();
                         key = inputDateFormat.format(date);
                     } else {
