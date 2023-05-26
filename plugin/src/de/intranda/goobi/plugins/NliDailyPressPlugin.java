@@ -113,7 +113,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
     }
 
     public String cancelSingleImport() {
-        Helper.setMeldung("plugin_NliDailyPress_cancelMessageSingleImport");
+        Helper.setMeldung("plugin_administration_nli_daily_press_cancelMessageSingleImport");
         resetSingleIssue();
         return "";
     }
@@ -128,7 +128,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
     }
 
     public String cancelMultipleImport() {
-        Helper.setMeldung("plugin_NliDailyPress_cancelMessageMultipleImport");
+        Helper.setMeldung("plugin_administration_nli_daily_press_cancelMessageMultipleImport");
         resetIssueBatch();
         return "";
     }
@@ -142,13 +142,13 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
             singleIssue.setIssueType(IssueType.get(getSingleIssueType()));
             singleIssue.setFiles(getUploadedFiles());
             if (createProcess(singleIssue, createProcessName(singleIssue), getWorkflowName()) != null) {
-                Helper.setMeldung("plugin_NliDailyPress_successMessageSingleImport");
+                Helper.setMeldung("plugin_administration_nli_daily_press_successMessageSingleImport");
                 resetSingleIssue();
             } else {
-                Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageSingleImport");
+                Helper.setFehlerMeldung("plugin_administration_nli_daily_press_errorMessageSingleImport");
             }
         } else {
-            Helper.setFehlerMeldung("plugin_NliDailyPress_errorMissingNewspaperSelection");
+            Helper.setFehlerMeldung("plugin_administration_nli_daily_press_errorMissingNewspaperSelection");
         }
         return "";
     }
@@ -160,7 +160,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
             if (p != null) {
                 processes.add(p);
             } else {
-                Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageMultipleImport");
+                Helper.setFehlerMeldung("plugin_administration_nli_daily_press_errorMessageMultipleImport");
                 for (Process process : processes) {
                     ProcessManager.deleteProcess(process);
                 }
@@ -168,7 +168,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
             }
         }
 
-        Helper.setMeldung("plugin_NliDailyPress_successMessageMultipleImport");
+        Helper.setMeldung("plugin_administration_nli_daily_press_successMessageMultipleImport");
         resetIssueBatch();
         return "";
     }
@@ -269,7 +269,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
     public void setImageUploadFolder(String path) {
         File folder = new File(path);
         if (!folder.exists() || folder.isFile()) {
-            Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageInvalidImageUploadFolder");
+            Helper.setFehlerMeldung("plugin_administration_nli_daily_press_errorMessageInvalidImageUploadFolder");
         } else {
             this.imageUploadFolder = path;
             updateIssueImagePaths();
@@ -356,7 +356,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
             this.issueBatch = createIssues(this.issueBatchFile.getPath());
         } catch (ConfigurationException | IOException e) {
             log.error(e);
-            Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageReadBatchFile " + e.toString());
+            Helper.setFehlerMeldung("plugin_administration_nli_daily_press_errorMessageReadBatchFile " + e.toString());
         }
 
     }
@@ -479,14 +479,14 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         } catch (Exception e) {
             ProcessManager.deleteProcess(newProcess);
             log.error(e.toString(), e);
-            Helper.setFehlerMeldung("plugin_NliDailyPress_errorMessageCreateMetsFile " + e.toString());
+            Helper.setFehlerMeldung("plugin_administration_nli_daily_press_errorMessageCreateMetsFile " + e.toString());
             return null;
         }
 
         try {
             int numFiles = copyMediaFiles(issue.getFiles(), newProcess);
             createProcessProperty("Pages", Integer.toString(numFiles), newProcess);
-        } catch (IOException | InterruptedException | SwapException | DAOException  | PDFWriteException | PDFReadException e) {
+        } catch (IOException | InterruptedException | SwapException | DAOException | PDFWriteException | PDFReadException e) {
             ProcessManager.deleteProcess(newProcess);
             log.error(e);
             Helper.setFehlerMeldung(e.toString());
@@ -495,17 +495,17 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
         triggerNextStep(newProcess);
 
-        Helper.setMeldung("plugin_NliDailyPress_successMessageCreatedProcess " + processTitle);
+        Helper.setMeldung("plugin_administration_nli_daily_press_successMessageCreatedProcess " + processTitle);
         return newProcess;
 
     }
 
     private List<String> getStepsToDelete(NewspaperIssue issue) {
         List<String> steps = new ArrayList<>();
-        List<HierarchicalConfiguration> subConfigs =  config.configurationsAt("workflow/alterWorkflow");
+        List<HierarchicalConfiguration> subConfigs = config.configurationsAt("workflow/alterWorkflow");
         for (HierarchicalConfiguration alterWorkflow : subConfigs) {
             String issueType = alterWorkflow.getString("issueType", null);
-            if(StringUtils.isNotBlank(issueType) && issue.getIssueType().name.equalsIgnoreCase(issueType)) {
+            if (StringUtils.isNotBlank(issueType) && issue.getIssueType().name.equalsIgnoreCase(issueType)) {
                 String stepToDelete = alterWorkflow.getString("deleteStep", null);
                 steps.add(stepToDelete);
             }
@@ -518,12 +518,12 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @param stepToDelete
      */
     private void deleteStep(Process newProcess, String stepToDelete) {
-        if(StringUtils.isNotBlank(stepToDelete)) {
+        if (StringUtils.isNotBlank(stepToDelete)) {
             List<Step> steps = newProcess.getSchritte();
             Iterator<Step> iter = steps.iterator();
-            while(iter.hasNext()) {
+            while (iter.hasNext()) {
                 Step step = iter.next();
-                if(stepToDelete.equalsIgnoreCase(step.getTitel())) {
+                if (stepToDelete.equalsIgnoreCase(step.getTitel())) {
                     logger.debug("Deleting step " + step.getTitel());
                     iter.remove();
                 }
@@ -551,7 +551,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
      * @throws PDFWriteException
      */
     private int copyMediaFiles(List<FileUpload> files, Process newProcess) throws IOException, InterruptedException, SwapException, DAOException,
-    PDFWriteException, PDFReadException {
+            PDFWriteException, PDFReadException {
         File masterImagesDir = new File(newProcess.getImagesOrigDirectory(true));
         File pdfDir = new File(newProcess.getOcrPdfDirectory());
         File ocrTextDir = new File(newProcess.getOcrTxtDirectory());
@@ -572,12 +572,13 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
                 }
                 List<File> singlePdfFiles = PDFConverter.writeSinglePagePdfs(fileUpload.getPath(), pdfDir, fileCounter);
 
-                for(File pdfFile : singlePdfFiles) {
+                for (File pdfFile : singlePdfFiles) {
                     PDFConverter.writeAltoFile(pdfFile, ocrAltoDir, null, false);
                     PDFConverter.writeFullText(pdfFile, ocrTextDir, "utf-8", fileCounter);
                     PDFConverter.writeImages(pdfFile, masterImagesDir, fileCounter, 300, "tif", "ghostscript");
                     fileCounter++;
-                };
+                }
+                ;
             }
         }
 
@@ -693,10 +694,9 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         String folderColumn = getConfig().getString("issueUploadMappings/uploadFolder", "code");
 
         List<NewspaperIssue> issues = new ArrayList<>();
-        Iterator<String> rows = manager.getIdentifiers().iterator();
+
         // skip first row
-        while (rows.hasNext()) {
-            String rowNumber = rows.next();
+        for (String rowNumber : manager.getIdentifiers()) {
             logger.trace("Creating issue from row " + rowNumber);
             Map<String, String> rowData = manager.getRow(rowNumber);
             logger.trace("row data is " + rowData);

@@ -4,8 +4,9 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite" 
 	xmlns:h="http://xmlns.jcp.org/jsf/html" 
 	xmlns:f="http://xmlns.jcp.org/jsf/core" 
-	xmlns:x="http://myfaces.apache.org/tomahawk" 
-	xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites" 
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:x="http://myfaces.apache.org/tomahawk" 
+	xmlns:intranda="http://xmlns.jcp.org/jsf/composite/compositesPG" 
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:p="http://primefaces.org/ui">
 
@@ -21,274 +22,349 @@
     <script type="text/javascript" src="#{AdministrationForm.administrationPlugin.title}/dailyPress.js" />
     
     
-        <h:form id="dailypressform" prependId="false" styleClass="form-horizontal form-bordered"  enctype="multipart/form-data">
+        <h:form id="dailypressform" prependId="false" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="box box-color box-bordered lightgrey">
-                        <div class="box-title">
-                            <h3>
-                                <i class="fa fa-plug"></i>
-                                <h:outputText value="#{msgs[AdministrationForm.administrationPlugin.title]}" />
-                            </h3>
+                    
+                    <intranda:box
+                        boxType="action"
+                        boxForm="true"
+                        boxPadding="false"
+                        boxTitle="false">
+                
+                        <intranda:boxTitle
+                            title="#{msgs[AdministrationForm.administrationPlugin.title]}"
+                            icon="fa-plug">
                             <ul class="tabs">
-								<h:panelGroup>
-									<li class="#{(NavigationForm.uiStatus.nliDailyPress_singleImport eq '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null) ?'active':''}">
-										<h:commandLink action="#{NavigationForm.Reload}" value="#{msgs.plugin_NliDailyPress_singleImport}" immediate="true">
-											<f:setPropertyActionListener
-												target="#{NavigationForm.uiStatus.nliDailyPress_singleImport}" value="" />
-										</h:commandLink>
-									</li>
-								</h:panelGroup>
-								<li class="#{NavigationForm.uiStatus.nliDailyPress_singleImport eq 'tab2'?'active':''}">
-									<h:commandLink action="#{NavigationForm.Reload}" immediate="true"
-										value="#{msgs.plugin_NliDailyPress_multipleImport}">
-										<f:setPropertyActionListener
-											target="#{NavigationForm.uiStatus.nliDailyPress_singleImport}"
-											value="tab2" />
-									</h:commandLink>
-								</li>
-							</ul>
-                        </div>
-                        <div class="box-content nopadding">
+                                <li
+                                    class="tab #{(NavigationForm.uiStatus.nliDailyPress_singleImport eq '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null) ?'active':''}">
+                                    <h:commandLink
+                                        id="tab1"
+                                        action="{NavigationForm.Reload}"
+                                        value="#{msgs.plugin_administration_nli_daily_press_singleImport}"
+                                        immediate="true">
+                                        <f:setPropertyActionListener
+											target="#{NavigationForm.uiStatus.nliDailyPress_singleImport}" 
+                                            value="" />
+                                        <f:ajax
+                                            render="dailypressform"
+                                            execute="dailypressform" />
+                                    </h:commandLink>
+                                </li>
+                                <li
+                                    class="tab #{NavigationForm.uiStatus.nliDailyPress_singleImport eq 'tab2'?'active':''}">
+                                    <h:commandLink
+                                        id="tab2"
+                                        action="{NavigationForm.Reload}"
+                                        value="#{msgs.plugin_administration_nli_daily_press_multipleImport}"
+                                        immediate="true">
+                                        <f:setPropertyActionListener
+                                            target="#{NavigationForm.uiStatus.nliDailyPress_singleImport}"
+                                            value="tab2" />
+                                        <f:ajax
+                                            render="dailypressform"
+                                            execute="dailypressform" />
+                                    </h:commandLink>
+                                </li>
+                            </ul>
+                        </intranda:boxTitle>
+                
+                        <div class="tab-content">
+                
+                            <!-- ############################ Single record import ################################# -->
+                            <h:panelGroup
+                                layout="block"
+                                rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
+                                
+                                
+                                <!-- Field for record type -->
+                                <intranda:formInputDropDown 
+                                    name="singleIssueType" 
+                                    label="#{msgs.plugin_administration_nli_daily_press_singleIssueType}" 
+                                    field="#{AdministrationForm.administrationPlugin.singleIssueType}" 
+                                    selectItems="#{AdministrationForm.administrationPlugin.issueTypes}" 
+                                    help="#{msgs.helpplugin_administration_nli_daily_press_singleIssueType}" 
+                                    required="true" />
 
-							<!-- ############################ Single record import ################################# -->
-                        	
-                        	<h:panelGroup
-								rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
-							
-								<!-- Field for record type -->
-								<intranda:formInputDropDown 
-								name="singleIssueType" 
-								label="#{msgs.plugin_NliDailyPress_singleIssueType}" 
-								field="#{AdministrationForm.administrationPlugin.singleIssueType}" 
-								selectItems="#{AdministrationForm.administrationPlugin.issueTypes}" 
-								help="#{msgs.helpPlugin_NliDailyPress_singleIssueType}" 
-								fieldStyle="form-control" required="true" />
-
-								<!-- Field for CMS ID -->								
-								<div class="form-group">
-									<div class="col-sm-3 control-label">
-										<h:outputLabel for="singleCmsID" value="#{msgs.plugin_NliDailyPress_singleCmsID}" />
-										<h:panelGroup rendered="true">
-											<i class="fa fa-asterisk pull-right font-asterisk"/>
-										</h:panelGroup>
-									</div>
-									<h:panelGroup layout="block" id="searchGroup" styleClass="col-sm-6">
-										<x:inputText id="singleCmsID" forceId="true"
-											styleClass="form-control" value="#{AdministrationForm.administrationPlugin.singleCmsID}" required="true"
-											readonly="false" onfocus="true">
-										</x:inputText>
-										<h:message for="singleCmsID" showDetail="true" styleClass="help-inline font-danger" />
-										<h:outputText styleClass="help-block font-light" rendered="#{NavigationForm.showHelp}"
-											value="#{msgs.helpPlugin_NliDailyPress_singleCmsID}" />
-									</h:panelGroup>
-									<div class="col-sm-3">
-										<h:commandLink styleClass="btn font-size-s padding-sides-more" id="cms_id_search_btn"
-										action="#{AdministrationForm.administrationPlugin.searchNewspaper}">
-											<h:outputText value="#{msgs.search}" />
-											<f:ajax execute="searchGroup" render="newspaper_metadata" onevent="executeNewspaperSearch"></f:ajax>
-										</h:commandLink>
-									</div>
-								</div>
-								
-								<!-- Field for ajax loader Number -->
+                                <!-- Field for CMS ID -->    
+                                <div class="row">
+                            
+                                    <!-- LABEL -->
+                                    <div class="col-12 col-md-3">
+                                        <intranda:formLabel label="#{msgs.plugin_administration_nli_daily_press_singleCmsID}" 
+                                            labelFor="singleCmsID"  labelRequired="true"/>
+                                    </div>
+                                    <!-- // LABEL -->
+                            
+                                    <div class="col-12 col-md-9" id="searchGroup">
+                            
+                                        <div class="row col-12 border-0">
+                            
+                                            <div class="col-10 ps-0 py-0 min-vh-0" >
+                                                <x:inputText id="singleCmsID" forceId="true"
+                                                    styleClass="form-control form__input" value="#{AdministrationForm.administrationPlugin.singleCmsID}" required="true"
+                                                    readonly="false" onfocus="true"/>
+                                             </div>
+                                            <div class="col-2 pe-0 py-0 min-vh-0">
+                                                <h:commandLink styleClass="btn btn-blank" id="cms_id_search_btn"
+                                                action="#{AdministrationForm.administrationPlugin.searchNewspaper}">
+                                                    <h:outputText value="#{msgs.search}" />
+                                                    <f:ajax execute="searchGroup" render="newspaper_metadata" onevent="executeNewspaperSearch"></f:ajax>
+                                                </h:commandLink>
+                                            </div>
+                                        </div>
+                            
+                                        <!-- HELP -->
+                                        <intranda:formHelp content="#{msgs.helpplugin_administration_nli_daily_press_singleCmsID}" msgFor="singleCmsID" />
+                                        <!-- // HELP -->
+                            
+                                    </div>
+                            
+                                </div>
+                                <!-- Field for CMS ID -->
+                                
+                                
+                                <!-- Field for ajax loader Number -->
                                 <h:panelGroup styleClass="form-group" id="newspaper_metadata_waiting">                                    
-									<div id="ajaxloader_newspaperquery" class="ajaxloader">
+                                    <div id="ajaxloader_newspaperquery" class="ajaxloader">
                                             <img src="template/img/goobi/ajaxloader2.gif" />
                                     </div>
-								</h:panelGroup>
-								<!-- Field for newspaper metadata -->
-								<h:panelGroup layout="block" styleClass="form-group" id="newspaper_metadata">
-									<h:panelGroup  rendered="#{AdministrationForm.administrationPlugin.newspaperSelected}">
-										<div class="col-sm-3 control-label">
-											<h:outputLabel value="#{msgs.plugin_NliDailyPress_record}" />
-										</div>
-										<div class="col-sm-9">
-											<dl class="dl-horizontal">
-												<dt>#{msgs.plugin_NliDailyPress_record_title}</dt>
-												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Title")}</dd>
-												
-												<dt>#{msgs.plugin_NliDailyPress_record_publisher}</dt>
-												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Publisher")}</dd>
-												
-												<dt>#{msgs.plugin_NliDailyPress_record_language}</dt>
-												<dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Language")}</dd>
-											</dl>
-										</div>
-									</h:panelGroup>
-									<h:panelGroup layout="block" styleClass="alert alert-error" id="missing_newspaper_metadata" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}">
-										<h4 class="alert-message" id="missing_newspaper_message"><i class="fa fa-warning"/>#{msgs.plugin_NliDailyPress_no_newspaper_dataset_found}</h4>
-									</h:panelGroup>
-								</h:panelGroup>
-								
-								<!-- Field for Issue Number -->
-								<intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_NliDailyPress_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueNumber}" fieldStyle="form-control" required="false" />
-			                    <!-- Field for Issue Date -->
-								<intranda:formInputCalendar name="singleIssueDate" label="#{msgs.plugin_NliDailyPress_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueDate}" fieldStyle="form-control date" required="true" />
-			                    <!-- Field for Issue Comment -->
-								<intranda:formInputTextArea name="singleIssueComment" label="#{msgs.plugin_NliDailyPress_singleIssueComment}" field="#{AdministrationForm.administrationPlugin.singleIssueComment}" help="#{msgs.helpPlugin_NliDailyPress_singleIssueComment}" fieldStyle="form-control" required="false" />
-			                    
-			                    <!-- Field for file upload -->
-			                    <div class="form-group ">
-									<div id="fileupload_label" class="col-sm-3 control-label">
-										<h:outputLabel for="fileUpload" value="#{msgs.plugin_NliDailyPress_uploadFiles}" />
-										<h:panelGroup rendered="true">
-											<i class="fa fa-asterisk pull-right font-asterisk"/>
-										</h:panelGroup>
-									</div>
-									<div class="col-sm-9 no-padding" >
-									<h:panelGroup layout="block"  id="file_list" class="col-sm-3">
-										<ul>
-											<ui:repeat var="uploadedFile" value="#{AdministrationForm.administrationPlugin.uploadedFiles}">
-												<li class="uploaded-file-item #{uploadedFile.valid ? 'valid':'invalid'}">
-													<h:outputLabel value="#{uploadedFile.fileName}"></h:outputLabel>
-												</li>
-											</ui:repeat>
-										</ul>
-									</h:panelGroup>
-									<div id="file_upload_actions" class="col-sm-6">
-										<div class="col-sm-6">
-											<p:fileUpload fileUploadListener="#{AdministrationForm.administrationPlugin.handleFileUpload}" 
-						                      id="upload" 
-						                      auto="true"
-						                      style="text-align:center;"
-						                      multiple="true" 
-						                      dragDropSupport="true" 
-						                      label="#{msgs.selectFiles}" 
-						                      allowTypes="/#{AdministrationForm.administrationPlugin.allowedTypes}/"
-						                      update="file_list">
-<!-- 						                      <f:ajax render="file_list"></f:ajax> -->
-						                      </p:fileUpload>
-										</div>
-										<div class="col-sm-6">
-											<h:commandLink styleClass="btn font-size-s padding-sides-more" id="delete_all_uploaded_files"
-											action="#{AdministrationForm.administrationPlugin.deleteAllUploadedFiles}">
-												<h:outputText value="#{msgs.plugin_NliDailyPress_delete_all_uploaded_files}" />
-												<f:ajax render="file_list"></f:ajax>
-											</h:commandLink>
-										</div>
-									</div>
-									</div>
-								</div>
-			                    
-			                    <!-- Form action -->
-								<div class="form-actions">
-				                    <!-- Execute single import -->
-	                        		<h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
-				                    	<i class="fa fa-check margin-right-5"></i>
-				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_executeSingleImport}" />
-				                    </h:commandLink>
-				                	<!-- Cancel single import -->
-				                    <h:commandLink styleClass="btn font-size-s margin-left-10 pull-right margin-bottom-more" action="#{AdministrationForm.administrationPlugin.cancelSingleImport}" immediate="true">
-				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_cancelSingleImport}" />
-			                        </h:commandLink>
-			                    </div>	
-							</h:panelGroup>
+                                </h:panelGroup>
+                                
+                                <!-- Field for newspaper metadata -->
+                                <div class="row" jsf:rendered="#{AdministrationForm.administrationPlugin.newspaperSelected}">
+                            
+                                    <!-- LABEL -->
+                                    <div class="col-12 col-md-3">
+                                        <intranda:formLabel label="#{msgs.plugin_administration_nli_daily_press_record}" 
+                                            labelRequired="false"/>
+                                    </div>
+                                    <!-- // LABEL -->
+                            
+                                    <div class="col-12 col-md-9">
+                                        
+                                        <h:panelGroup  rendered="#{AdministrationForm.administrationPlugin.newspaperSelected}">
+                                            <dl class="dl-horizontal">
+                                                <dt>#{msgs.plugin_administration_nli_daily_press_record_title}</dt>
+                                                <dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Title")}</dd>
+                                                
+                                                <dt>#{msgs.plugin_administration_nli_daily_press_record_publisher}</dt>
+                                                <dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Publisher")}</dd>
+                                                
+                                                <dt>#{msgs.plugin_administration_nli_daily_press_record_language}</dt>
+                                                <dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Language")}</dd>
+                                            </dl>
+                                        </h:panelGroup>
+                                        <h:panelGroup layout="block" styleClass="alert alert-error" id="missing_newspaper_metadata" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}">
+                                            <h4 class="alert-message" id="missing_newspaper_message">
+                                            <i class="fa fa-warning"/>#{msgs.plugin_administration_nli_daily_press_no_newspaper_dataset_found}</h4>
+                                        </h:panelGroup>
+                                        
+                                    </div>
+                            
+                                </div>
+                                
+                                
+                                
+                                
+                               
+                                
+                                <!-- Field for Issue Number -->
+                                <intranda:formInputText name="singleIssueNumber" label="#{msgs.plugin_administration_nli_daily_press_singleIssueNumber}" field="#{AdministrationForm.administrationPlugin.singleIssueNumber}" help="#{msgs.helpplugin_administration_nli_daily_press_singleIssueNumber}" fieldStyle="form-control" required="false" />
+                                <!-- Field for Issue Date -->
+                                <intranda:formInputCalendar name="singleIssueDate" label="#{msgs.plugin_administration_nli_daily_press_singleIssueDate}" field="#{AdministrationForm.administrationPlugin.singleIssueDate}" help="#{msgs.helpplugin_administration_nli_daily_press_singleIssueDate}" fieldStyle="form-control date" required="true" />
+                                <!-- Field for Issue Comment -->
+                                <intranda:formInputTextArea name="singleIssueComment" label="#{msgs.plugin_administration_nli_daily_press_singleIssueComment}" field="#{AdministrationForm.administrationPlugin.singleIssueComment}" help="#{msgs.helpplugin_administration_nli_daily_press_singleIssueComment}" fieldStyle="form-control" required="false" />
+                                
+                                <!-- Field for file upload -->
+                                <div class="row">
+                            
+                                    <!-- LABEL -->
+                                    <div class="col-12 col-md-3">
+                                        <intranda:formLabel label="#{msgs.plugin_administration_nli_daily_press_uploadFiles}" 
+                                            labelFor="fileUpload"  labelRequired="true"/>
+                                    </div>
+                                    <!-- // LABEL -->
+                            
+                                    <div class="col-12 col-md-9">
+                                        <div class="row col-12 border-0">
+                                            <div class="col-3 ps-0 py-0 min-vh-0" >
+                                                <h:panelGroup layout="block" id="file_list">
+                                                    <ul>
+                                                        <ui:repeat var="uploadedFile" value="#{AdministrationForm.administrationPlugin.uploadedFiles}">
+                                                            <li class="uploaded-file-item #{uploadedFile.valid ? 'valid':'invalid'}">
+                                                                <h:outputLabel value="#{uploadedFile.fileName}"/>
+                                                            </li>
+                                                        </ui:repeat>
+                                                    </ul>
+                                                </h:panelGroup>
+                                                <h:commandLink styleClass="btn btn-blank" id="delete_all_uploaded_files"
+                                                    action="#{AdministrationForm.administrationPlugin.deleteAllUploadedFiles}">
+                                                    <h:outputText value="#{msgs.plugin_administration_nli_daily_press_delete_all_uploaded_files}" />
+                                                    <f:ajax render="file_list"></f:ajax>
+                                                </h:commandLink>
+                                             </div>
+                                            <div class="col-9 pe-0 py-0 min-vh-0">
+                                                <p:fileUpload fileUploadListener="#{AdministrationForm.administrationPlugin.handleFileUpload}" 
+                                                  id="upload" 
+                                                  auto="true"
+                                                  style="text-align:center;"
+                                                  multiple="true" 
+                                                  dragDropSupport="true" 
+                                                  label="#{msgs.selectFiles}" 
+                                                  allowTypes="/#{AdministrationForm.administrationPlugin.allowedTypes}/"
+                                                  update="file_list">
+    <!--                                              <f:ajax render="file_list"></f:ajax> -->
+                                                  </p:fileUpload>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- // Field for file upload -->
+                                
+                            </h:panelGroup>
+                
+                            <!-- ############################ Multiple records import ################################# -->
+                            <h:panelGroup
+                                layout="block"
+                                rendered="#{NavigationForm.uiStatus.nliDailyPress_singleImport == 'tab2'}">
+                                
+                                <!-- Field for excel file upload -->
+                                <div class="row">
+                            
+                                    <!-- LABEL -->
+                                    <div class="col-12 col-md-3">
+                                        <intranda:formLabel label="#{msgs.plugin_administration_nli_daily_press_uploadIssueBatchFile}" 
+                                            labelRequired="true"/>
+                                    </div>
+                                    <!-- // LABEL -->
+                            
+                                    <div class="col-12 col-md-9">
+                                        <div class="row col-12 border-0">
+                                            <div class="col-3 ps-0 py-0 min-vh-0" >
+                                                <h:outputLabel  value="#{AdministrationForm.administrationPlugin.issueBatchFile.fileName}"></h:outputLabel>
+                                             </div>
+                                            <div class="col-9 pe-0 py-0 min-vh-0">
+                                                <div class="col-sm-6">
+                                                    <p:fileUpload fileUploadListener="#{AdministrationForm.administrationPlugin.handleBatchFileUpload}" 
+                                                      id="batch_file_upload" 
+                                                      auto="true"
+                                                      style="text-align:center;"
+                                                      multiple="true" 
+                                                      dragDropSupport="true" 
+                                                      label="#{msgs.selectFile}" 
+                                                      update="@form"
+                                                      fileLimit="1" 
+                                                      allowTypes="/(\.|\/)(xlsx|xls)$/">
+                                                      </p:fileUpload>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                                <!-- Issue list -->
+                                <h:panelGroup id="issue_list">
+                                    <ui:repeat var="issue" varStatus="status" value="#{AdministrationForm.administrationPlugin.issueBatch}">
+                                        <h:panelGroup layout="block" styleClass="form-group border-bottom-light" id="issue_metadata">
+                                            <div class="row">
+                                                <div class="col-12 col-md-3">
+                                                    <intranda:formLabel label="#{msgs.plugin_administration_nli_daily_press_record} #{status.index+1}" 
+                                                    labelRequired="false"/>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <dl class="dl-horizontal">
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_record_title}:</dt>
+                                                        <dd>#{issue.newspaper.getValue("Title")}</dd>
 
-							<!-- ############################ Multiple records import ################################# -->
-							
-							<h:panelGroup
-								rendered="#{NavigationForm.uiStatus.nliDailyPress_singleImport == 'tab2'}">
-								
-								 <!-- Field for excel file upload -->
-			                    <div class="form-group ">
-									<div id="batch_file_upload_label" class="col-sm-3 control-label">
-										<h:outputLabel for="batch_file_display" value="#{msgs.plugin_NliDailyPress_uploadIssueBatchFile}" />
-									</div>
-									<div class="col-sm-9 no-padding"  id="batch_file_upload_wrapper">
-										<h:panelGroup id="batch_file_display" styleClass="col-sm-3">										
-											<h:outputLabel  value="#{AdministrationForm.administrationPlugin.issueBatchFile.fileName}"></h:outputLabel>
-										</h:panelGroup>
-										<div id="batch_file_upload_actions" class="col-sm-6">
-											<div class="col-sm-6">
-												<p:fileUpload fileUploadListener="#{AdministrationForm.administrationPlugin.handleBatchFileUpload}" 
-							                      id="batch_file_upload" 
-							                      auto="true"
-							                      style="text-align:center;"
-							                      multiple="true" 
-							                      dragDropSupport="true" 
-							                      label="#{msgs.selectFile}" 
-							                      update="@form"
-							                      fileLimit="1" 
-							                      allowTypes="/(\.|\/)(xlsx|xls)$/">
-							                      </p:fileUpload>
-											</div>
-										</div>
-									</div>
-								</div>
-								
-								<!-- Issue list -->
-								<h:panelGroup id="issue_list">
-									<ui:repeat var="issue" varStatus="status" value="#{AdministrationForm.administrationPlugin.issueBatch}">
-										<h:panelGroup layout="block" styleClass="form-group border-bottom-light" id="issue_metadata">
-												<div class="col-sm-3 control-label">
-													<h:outputLabel value="#{msgs.plugin_NliDailyPress_record} #{status.index+1}" />
-												</div>
-												<div class="col-sm-9">
-													<dl class="dl-horizontal">
-														<dt>#{msgs.plugin_NliDailyPress_record_title}:</dt>
-														<dd>#{issue.newspaper.getValue("Title")}</dd>
-
-														<dt>#{msgs.plugin_NliDailyPress_record_publisher}:</dt>
-														<dd>#{issue.newspaper.getValue("Publisher")}</dd>
-														
-														<dt>#{msgs.plugin_NliDailyPress_record_language}:</dt>
-														<dd>#{issue.newspaper.getValue("Language")}</dd>
-													
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueDate}:</dt>
-														<dd>#{issue.issueDate}</dd>
-														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueNumber}:</dt>
-														<dd>#{issue.issueNumber}</dd>
-														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueType}:</dt>
-														<dd>#{issue.issueType.name}</dd>
-														
-														<dt>#{msgs.plugin_NliDailyPress_singleIssueFileCount}:</dt>
-														<dd>#{issue.files.size()}</dd>
-													</dl>
-												</div>
-										</h:panelGroup>
-									</ui:repeat>
-								</h:panelGroup>
-								
-								 <!-- Field for excel file upload -->
-			                    <div class="form-group">
-									<div id="image_upload_folder_label" class="col-sm-3 control-label">
-										<h:outputLabel for="image_upload_folder_display" value="#{msgs.plugin_NliDailyPress_imageUploadFolder}" />
-									</div>
-									<div class="col-sm-9 no-padding"  id="image_upload_folder_wrapper">
-										<div id="image_upload_folder_display" class="col-sm-12">										
-												<h:inputText styleClass="form-control" id="image_upload_folder_select" value="#{AdministrationForm.administrationPlugin.imageUploadFolder}">
-													<f:ajax event="change" render="@all"></f:ajax>
-												</h:inputText>
-<!-- 											<h:outputLabel  value="#{AdministrationForm.administrationPlugin.imageUploadFolder.absolutePath}"></h:outputLabel> -->
-										</div>
-										<div id="image_upload_folder_actions" class="col-sm-6">
-											<div class="col-sm-6">
-											</div>
-										</div>
-									</div>
-								</div>
-								
-								
-								<!-- Form action -->
-								<div class="form-actions">
-									<!-- Execute multiple records import -->
-	                        		<h:commandLink styleClass="btn btn-green font-size-s margin-left-10 pull-right margin-bottom-more block" action="#{AdministrationForm.administrationPlugin.executeMultipleImport}">
-				                    	<i class="fa fa-check margin-right-5"></i>
-				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_executeMultipleImport}" />
-				                    </h:commandLink>
-				                	<!-- Cancel multiple records import -->
-				                    <h:commandLink styleClass="btn font-size-s margin-left-10 pull-right margin-bottom-more" action="#{AdministrationForm.administrationPlugin.cancelMultipleImport}" immediate="true">
-				                    	<h:outputText value="#{msgs.plugin_NliDailyPress_cancelMultipleImport}" />
-			                        </h:commandLink>
-			                    </div>	
-								
-							</h:panelGroup>
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_record_publisher}:</dt>
+                                                        <dd>#{issue.newspaper.getValue("Publisher")}</dd>
+                                                        
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_record_language}:</dt>
+                                                        <dd>#{issue.newspaper.getValue("Language")}</dd>
+                                                    
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_singleIssueDate}:</dt>
+                                                        <dd>#{issue.issueDate}</dd>
+                                                        
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_singleIssueNumber}:</dt>
+                                                        <dd>#{issue.issueNumber}</dd>
+                                                        
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_singleIssueType}:</dt>
+                                                        <dd>#{issue.issueType.name}</dd>
+                                                        
+                                                        <dt>#{msgs.plugin_administration_nli_daily_press_singleIssueFileCount}:</dt>
+                                                        <dd>#{issue.files.size()}</dd>
+                                                    </dl>
+                                                 </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </ui:repeat>
+                                </h:panelGroup>
+                                
+                                 <!-- Field for excel file upload -->
+                                 <div class="row">
+                                    <div class="col-12 col-md-3">
+                                        <intranda:formLabel label="#{msgs.plugin_administration_nli_daily_press_imageUploadFolder}" 
+                                        labelFor="image_upload_folder_label"  labelRequired="true"/>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <h:inputText styleClass="form-control form__input" id="image_upload_folder_select" value="#{AdministrationForm.administrationPlugin.imageUploadFolder}">
+                                            <f:ajax event="change" render="@all"></f:ajax>
+                                        </h:inputText>
+                                     </div>
+                                </div>
+                                
+                            </h:panelGroup>
+                
+                        </div>
+                
+                        <!-- ACTION BUTTONS -->
+                        <div class="form-actions">
+                            
+                            <ui:fragment rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
+                                
+                                <!-- Cancel single import -->
+                                <a
+                                    class="btn btn-blank me-2"
+                                    jsf:immediate="true"
+                                    jsf:action="#{AdministrationForm.administrationPlugin.cancelSingleImport}">
+                                    <h:outputText value="#{msgs.plugin_administration_nli_daily_press_cancelSingleImport}" />
+                                </a>
+                                
+                                <!-- Execute single import -->
+                                <h:commandLink styleClass="btn btn-success" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
+                                    <i class="fa fa-check margin-right-5"></i>
+                                    <span>
+                                        <h:outputText value="#{msgs.plugin_administration_nli_daily_press_executeSingleImport}" />
+                                    </span>
+                                </h:commandLink>
+                               
+                            </ui:fragment>
+                            
+                            <ui:fragment rendered="#{NavigationForm.uiStatus.nliDailyPress_singleImport == 'tab2'}">
+                                
+                                <!-- Cancel multiple records import -->
+			                    <a
+                                    class="btn btn-blank me-2"
+                                    jsf:immediate="true"
+                                    jsf:action="#{AdministrationForm.administrationPlugin.cancelMultipleImport}">
+                                    <h:outputText value="#{msgs.plugin_administration_nli_daily_press_cancelMultipleImport}" />
+                                </a>
+                                
+                                <!-- Execute multiple records import -->
+                        		<h:commandLink styleClass="btn btn-success" action="#{AdministrationForm.administrationPlugin.executeMultipleImport}">
+			                    	<i class="fa fa-check margin-right-5"></i>
+			                    	<span>
+                                        <h:outputText value="#{msgs.plugin_administration_nli_daily_press_executeMultipleImport}" />
+                                    </span>
+			                    </h:commandLink>
+                                
+			                </ui:fragment>
                             
                         </div>
-                    </div>
+                        <!-- // ACTION BUTTONS -->
+                
+                    </intranda:box>
                 </div>
             </div>
         </h:form>
