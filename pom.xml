@@ -7,7 +7,7 @@
     <relativePath />
   </parent>
   <groupId>io.goobi.workflow.plugin</groupId>
-  <artifactId>plugin-administration-nli_dailypress</artifactId>
+  <artifactId>plugin-administration-nli-dailypress</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>module-base</module>
