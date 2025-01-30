@@ -5,7 +5,6 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html" 
 	xmlns:f="http://xmlns.jcp.org/jsf/core" 
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:x="http://myfaces.apache.org/tomahawk" 
 	xmlns:intranda="http://xmlns.jcp.org/jsf/composite/compositesPG" 
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:p="http://primefaces.org/ui">
@@ -101,7 +100,7 @@
                                         <div class="row col-12 border-0">
                             
                                             <div class="col-10 ps-0 py-0 min-vh-0" >
-                                                <x:inputText id="singleCmsID" forceId="true"
+                                                <h:inputText id="singleCmsID" forceId="true"
                                                     styleClass="form-control form__input" value="#{AdministrationForm.administrationPlugin.singleCmsID}" required="true"
                                                     readonly="false" onfocus="true"/>
                                              </div>
@@ -324,12 +323,12 @@
                             <ui:fragment rendered="#{(NavigationForm.uiStatus.nliDailyPress_singleImport == '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null)}">
                                 
                                 <!-- Cancel single import -->
-                                <a
+                                <button
                                     class="btn btn-blank me-2"
                                     jsf:immediate="true"
                                     jsf:action="#{AdministrationForm.administrationPlugin.cancelSingleImport}">
                                     <h:outputText value="#{msgs.plugin_administration_nli_daily_press_cancelSingleImport}" />
-                                </a>
+                                </button>
                                 
                                 <!-- Execute single import -->
                                 <h:commandLink styleClass="btn btn-success" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
@@ -344,12 +343,12 @@
                             <ui:fragment rendered="#{NavigationForm.uiStatus.nliDailyPress_singleImport == 'tab2'}">
                                 
                                 <!-- Cancel multiple records import -->
-			                    <a
+			                    <button
                                     class="btn btn-blank me-2"
                                     jsf:immediate="true"
                                     jsf:action="#{AdministrationForm.administrationPlugin.cancelMultipleImport}">
                                     <h:outputText value="#{msgs.plugin_administration_nli_daily_press_cancelMultipleImport}" />
-                                </a>
+                                </button>
                                 
                                 <!-- Execute multiple records import -->
                         		<h:commandLink styleClass="btn btn-success" action="#{AdministrationForm.administrationPlugin.executeMultipleImport}">
