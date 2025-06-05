@@ -445,8 +445,6 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         newProcess.setDocket(template.getDocket());
 
         bhelp.SchritteKopieren(template, newProcess);
-        bhelp.ScanvorlagenKopieren(template, newProcess);
-        bhelp.WerkstueckeKopieren(template, newProcess);
         bhelp.EigenschaftenKopieren(template, newProcess);
 
         //delete PDF creation step if not required
