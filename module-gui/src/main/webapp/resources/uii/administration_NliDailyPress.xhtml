@@ -7,7 +7,8 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:util="http://goobi.io/util">
 
     <composite:interface>
     </composite:interface>
@@ -33,7 +34,7 @@
 
                         <intranda:boxTitle
                             title="#{msgs[AdministrationForm.administrationPlugin.title]}"
-                            icon="fa-plug">
+                            icon="plug">
                             <ul class="tabs">
                                 <li
                                     class="tab #{(NavigationForm.uiStatus.nliDailyPress_singleImport eq '' || NavigationForm.uiStatus.nliDailyPress_singleImport == null) ?'active':''}">
@@ -156,7 +157,8 @@
                                         </h:panelGroup>
                                         <h:panelGroup layout="block" styleClass="alert alert-error" id="missing_newspaper_metadata" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}">
                                             <h4 class="alert-message" id="missing_newspaper_message">
-                                            <i class="fa fa-warning"/>#{msgs.plugin_administration_nli_daily_press_no_newspaper_dataset_found}</h4>
+                                                <util:icon-text icon="alert-triangle" text="#{msgs.plugin_administration_nli_daily_press_no_newspaper_dataset_found}" />
+                                            </h4>
                                         </h:panelGroup>
 
                                     </div>
@@ -332,10 +334,7 @@
 
                                 <!-- Execute single import -->
                                 <h:commandLink styleClass="btn btn-success" action="#{AdministrationForm.administrationPlugin.executeSingleImport}">
-                                    <i class="fa fa-check margin-right-5"></i>
-                                    <span>
-                                        <h:outputText value="#{msgs.plugin_administration_nli_daily_press_executeSingleImport}" />
-                                    </span>
+                                    <util:icon-text icon="check" text="#{msgs.plugin_administration_nli_daily_press_executeSingleImport}" />
                                 </h:commandLink>
 
                             </ui:fragment>
@@ -352,10 +351,7 @@
 
                                 <!-- Execute multiple records import -->
                         		<h:commandLink styleClass="btn btn-success" action="#{AdministrationForm.administrationPlugin.executeMultipleImport}">
-			                    	<i class="fa fa-check margin-right-5"></i>
-			                    	<span>
-                                        <h:outputText value="#{msgs.plugin_administration_nli_daily_press_executeMultipleImport}" />
-                                    </span>
+			                    	<util:icon-text icon="check" text="#{msgs.plugin_administration_nli_daily_press_executeMultipleImport}" />
 			                    </h:commandLink>
 
 			                </ui:fragment>
