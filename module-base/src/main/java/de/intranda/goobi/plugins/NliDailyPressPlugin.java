@@ -331,7 +331,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         } catch (IOException e) {
             log.error(e);
             upload = new FileUpload();
-            upload.setPath(new File(event.getFile().getFileName()));
+            upload.setPath(new File(FilenameUtils.getName(event.getFile().getFileName())));
         }
 
         this.uploadedFiles.add(upload);
@@ -347,7 +347,7 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
         } catch (IOException e) {
             log.error(e);
             upload = new FileUpload();
-            upload.setPath(new File(event.getFile().getFileName()));
+            upload.setPath(new File(FilenameUtils.getName(event.getFile().getFileName())));
         }
 
         this.issueBatchFile = upload;
@@ -361,9 +361,17 @@ public @Data class NliDailyPressPlugin implements IAdministrationPlugin, IPlugin
 
     }
 
-    public FileUpload copyFile(String fileName, InputStream in) {
+    public FileUpload copyFile(String fileName, InputStream in) throws IOException {
 
-        File file = new File(getImportFolder(true), fileName);
+        String safeName = FilenameUtils.getName(fileName);
+        if (safeName.isEmpty()) {
+            throw new IOException("Invalid filename: " + fileName);
+        }
+        File importDir = getImportFolder(true);
+        File file = new File(importDir, safeName);
+        if (!file.getCanonicalPath().startsWith(importDir.getCanonicalPath() + File.separator)) {
+            throw new IOException("Path traversal detected in filename: " + fileName);
+        }
         FileUpload upload = new FileUpload();
         upload.setPath(file);
         OutputStream out = null;
