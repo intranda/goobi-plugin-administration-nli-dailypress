@@ -155,11 +155,7 @@
                                                 <dd>#{AdministrationForm.administrationPlugin.selectedNewspaper.getValue("Language")}</dd>
                                             </dl>
                                         </h:panelGroup>
-                                        <h:panelGroup layout="block" styleClass="alert alert-error" id="missing_newspaper_metadata" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}">
-                                            <h4 class="alert-message" id="missing_newspaper_message">
-                                                <util:icon-text icon="alert-triangle" text="#{msgs.plugin_administration_nli_daily_press_no_newspaper_dataset_found}" />
-                                            </h4>
-                                        </h:panelGroup>
+                                        <util:alert type="warning" rendered="#{!AdministrationForm.administrationPlugin.newspaperSelected}" message="#{msgs.plugin_administration_nli_daily_press_no_newspaper_dataset_found}" />
 
                                     </div>
 
